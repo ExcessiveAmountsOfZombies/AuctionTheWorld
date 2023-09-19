@@ -1,12 +1,14 @@
 package com.epherical.auctionworld.listener;
 
 import com.epherical.auctionworld.block.AuctionBlock;
+import com.epherical.auctionworld.data.AuctionFilterManager;
 import com.epherical.auctionworld.menu.AuctionMenu;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -14,7 +16,6 @@ import net.minecraftforge.registries.RegisterEvent;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RegisterListener {
-
 
     public static AuctionBlock AUCTION_HOUSE;
 
@@ -29,6 +30,7 @@ public class RegisterListener {
             event.register(ForgeRegistries.Keys.BLOCKS, id("auction_house"), () -> new AuctionBlock(BlockBehaviour.Properties.of()));
         }
     }
+
 
 
     public static ResourceLocation id(String value) {

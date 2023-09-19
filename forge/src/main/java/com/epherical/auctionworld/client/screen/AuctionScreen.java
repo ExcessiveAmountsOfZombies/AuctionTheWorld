@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagManager;
 import net.minecraft.world.entity.player.Inventory;
 
 public class AuctionScreen extends AbstractContainerScreen<AuctionMenu> {
@@ -34,5 +35,10 @@ public class AuctionScreen extends AbstractContainerScreen<AuctionMenu> {
         int left = this.leftPos;
         int center = (this.height - this.imageHeight) / 2;
         graphics.blit(AUCTION_LOCATION, left, center, 0, 0, this.imageWidth, this.imageHeight, 512, 512);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics p_281635_, int p_282681_, int p_283686_) {
+
     }
 }
