@@ -1,4 +1,4 @@
-package com.epherical.bozo;
+package com.epherical.auctionworld;
 
 import net.fabricmc.api.ModInitializer;
 
