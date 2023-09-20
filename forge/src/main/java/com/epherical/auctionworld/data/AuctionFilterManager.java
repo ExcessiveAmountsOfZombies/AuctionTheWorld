@@ -1,15 +1,15 @@
 package com.epherical.auctionworld.data;
 
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class AuctionFilterManager {
 
@@ -34,7 +34,8 @@ public class AuctionFilterManager {
     private Node<Item> tree = new Node<>(true);
 
 
-    public AuctionFilterManager() {}
+    public AuctionFilterManager() {
+    }
 
     public void updateFilter(Registry<Item> items) {
         tree = new Node<>(true);
@@ -59,7 +60,11 @@ public class AuctionFilterManager {
         tree = tree.getRoot();
     }
 
-    private static class Node<T> {
+    public Node<Item> getTree() {
+        return tree;
+    }
+
+    public static class Node<T> {
         private final boolean root;
 
         @Nullable
@@ -79,7 +84,6 @@ public class AuctionFilterManager {
         public Node() {
             this(false);
         }
-
 
 
         public Node<T> addChild(String key, TagKey<T> tag, boolean expansion) {
@@ -132,6 +136,20 @@ public class AuctionFilterManager {
                 }
             }
             return builder.toString();
+        }
+
+        public int renderText(GuiGraphics graphics, Font font, Integer x, Integer y, int level) {
+            for (Map.Entry<String, Node<T>> entry : children.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
+                if (!entry.getValue().expansion) {
+                    graphics.drawString(font, entry.getKey() + "    " + level, x + ((level - 1) * 8), y, 0xFFFFFF, false);
+                    y += 9;
+                } else {
+                    graphics.drawString(font, entry.getKey() + "    " + level, x, y, 0xFFFFFF, false);
+                    y += 9;
+                    y = entry.getValue().renderText(graphics, font, x, y, level + 1);
+                }
+            }
+            return y;
         }
     }
 }
