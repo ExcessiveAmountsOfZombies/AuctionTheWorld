@@ -14,7 +14,7 @@ public class AModClient {
     public static void initClient() {
         commonClient = new CommonClient();
 
-        MenuScreens.register(RegisterListener.AUCTION_MENU, AuctionScreen::new);
+        MenuScreens.register(RegisterListener.BROWSE_AUCTION_MENU, AuctionScreen::new);
     }
 
 }

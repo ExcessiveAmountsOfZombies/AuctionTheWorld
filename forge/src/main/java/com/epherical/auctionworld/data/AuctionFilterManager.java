@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.data;
 
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -138,13 +139,17 @@ public class AuctionFilterManager {
             return builder.toString();
         }
 
+        public void beginRenderText(GuiGraphics graphics, Font font, Integer x, Integer y, int level) {
+            graphics.drawString(font, "Categories", x, y, 0xFFFFFF);
+            renderText(graphics, font, x, y, level);
+        }
         public int renderText(GuiGraphics graphics, Font font, Integer x, Integer y, int level) {
             for (Map.Entry<String, Node<T>> entry : children.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                 if (!entry.getValue().expansion) {
-                    graphics.drawString(font, entry.getKey() + "    " + level, x + ((level - 1) * 8), y, 0xFFFFFF, false);
+                    graphics.drawString(font, entry.getKey(), x + ((level - 1) * 8), y, 0xFFFFFF, false);
                     y += 9;
                 } else {
-                    graphics.drawString(font, entry.getKey() + "    " + level, x, y, 0xFFFFFF, false);
+                    graphics.drawString(font, entry.getKey(), x, y, 0xFFFFFF, false);
                     y += 9;
                     y = entry.getValue().renderText(graphics, font, x, y, level + 1);
                 }

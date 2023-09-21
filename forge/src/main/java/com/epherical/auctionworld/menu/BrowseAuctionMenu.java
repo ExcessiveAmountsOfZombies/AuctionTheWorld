@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuctionMenu extends AbstractContainerMenu {
+public class BrowseAuctionMenu extends AbstractContainerMenu {
 
 
     public static List<AuctionItem> auctionItems = new ArrayList<>();
@@ -27,8 +27,8 @@ public class AuctionMenu extends AbstractContainerMenu {
         auctionItems.add(new AuctionItem(Instant.now(), Instant.now().plusSeconds(5000), 100, "Bozo", List.of(new ItemStack(Items.ACACIA_WOOD))));
     }
 
-    public AuctionMenu(int id, Inventory playerInventory) {
-        super(RegisterListener.AUCTION_MENU, id);
+    public BrowseAuctionMenu(int id, Inventory playerInventory) {
+        super(RegisterListener.BROWSE_AUCTION_MENU, id);
     }
 
     @Override

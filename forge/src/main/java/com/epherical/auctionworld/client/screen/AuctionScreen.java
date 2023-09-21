@@ -1,21 +1,23 @@
 package com.epherical.auctionworld.client.screen;
 
-import com.epherical.auctionworld.data.AuctionFilterManager;
 import com.epherical.auctionworld.listener.RegisterListener;
-import com.epherical.auctionworld.listener.TagListener;
-import com.epherical.auctionworld.menu.AuctionMenu;
+import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.object.AuctionItem;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 
-public class AuctionScreen extends AbstractContainerScreen<AuctionMenu> {
+public class AuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
 
-    public AuctionScreen(AuctionMenu menu, Inventory inventory, Component title) {
+
+    private Button auctionScreenButton;
+    private Button browse;
+
+    public AuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
     }
 
@@ -24,6 +26,13 @@ public class AuctionScreen extends AbstractContainerScreen<AuctionMenu> {
         imageWidth = 512;
         imageHeight = 512;
         super.init();
+        auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
+
+        }).width(80).pos(leftPos + 60, 258).build());
+
+        browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
+
+        }).width(60).pos(leftPos, 258).build());
     }
 
 
@@ -42,9 +51,8 @@ public class AuctionScreen extends AbstractContainerScreen<AuctionMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
-        tree.renderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
-
+        //AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
+        //tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
 
 
         int yInc = 0;
