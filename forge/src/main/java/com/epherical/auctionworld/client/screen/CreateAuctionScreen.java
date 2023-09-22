@@ -1,13 +1,8 @@
 package com.epherical.auctionworld.client.screen;
 
-import com.epherical.auctionworld.AMod;
 import com.epherical.auctionworld.listener.RegisterListener;
-import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
-import com.epherical.auctionworld.networking.CreateAuctionClick;
-import com.epherical.auctionworld.object.AuctionItem;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
