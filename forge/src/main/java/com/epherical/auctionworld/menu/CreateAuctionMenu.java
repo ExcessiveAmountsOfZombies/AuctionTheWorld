@@ -73,7 +73,7 @@ public class CreateAuctionMenu extends AbstractContainerMenu {
                 } else {
                     ItemStack item = this.getItem();
                     if (ItemStack.isSameItemSameTags(item, firstSlot.getItem())) {
-                        setSelected(true);
+                        setSelected(!isSelected());
                     }
                 }
             }
