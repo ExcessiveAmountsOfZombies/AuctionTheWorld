@@ -2,11 +2,13 @@ package com.epherical.auctionworld.client.screen;
 
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
+import com.epherical.auctionworld.menu.slot.SelectableSlot;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 
 public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
@@ -28,6 +30,25 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
     public void render(GuiGraphics graphics, int x, int y, float delta) {
         this.renderBackground(graphics);
         super.render(graphics, x, y, delta);
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(leftPos, topPos, -500.0F);
+        if (this.menu.getFirstSlot() != null) {
+            for (Slot slot : this.menu.slots) {
+                SelectableSlot select = (SelectableSlot) slot;
+                int slotX = select.x;
+                int slotY = select.y;
+                if (select.isSelected()) {
+                    renderSlotHighlight(graphics, slotX, slotY, 0, 0x33FFFF00);
+                }
+            }
+            int slotX = menu.getFirstSlot().x;
+            int slotY = menu.getFirstSlot().y;
+            renderSlotHighlight(graphics, slotX, slotY, 0, 0x3300FF00);
+        }
+        graphics.pose().popPose();
+
+        this.renderTooltip(graphics, x, y);
     }
 
     @Override

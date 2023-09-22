@@ -15,13 +15,11 @@ public class SelectableSlot extends Slot {
 
     @Override
     public boolean mayPlace(ItemStack player) {
-        isSelected = !isSelected;
         return false;
     }
 
     @Override
     public boolean mayPickup(Player player) {
-        isSelected = !isSelected;
         return false;
     }
 
