@@ -18,14 +18,14 @@ public class RegisterListener {
     public static AuctionBlock AUCTION_HOUSE;
 
     public static final MenuType<BrowseAuctionMenu> BROWSE_AUCTION_MENU = new MenuType<>(BrowseAuctionMenu::new, FeatureFlags.VANILLA_SET);
-    public static final MenuType<CreateAuctionMenu> CREATE_AUTION_MENU = new MenuType<>(CreateAuctionMenu::new, FeatureFlags.VANILLA_SET);
+    public static final MenuType<CreateAuctionMenu> CREATE_AUCTION_MENU = new MenuType<>(CreateAuctionMenu::new, FeatureFlags.VANILLA_SET);
 
 
     @SubscribeEvent
     public static void onRegister(RegisterEvent event) {
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.MENU_TYPES)) {
             event.register(ForgeRegistries.Keys.MENU_TYPES, id("browse_auction_menu"), () -> BROWSE_AUCTION_MENU);
-            event.register(ForgeRegistries.Keys.MENU_TYPES, id("create_auction_menu"), () -> CREATE_AUTION_MENU);
+            event.register(ForgeRegistries.Keys.MENU_TYPES, id("create_auction_menu"), () -> CREATE_AUCTION_MENU);
         } else if (event.getRegistryKey().equals(ForgeRegistries.Keys.BLOCKS)) {
             event.register(ForgeRegistries.Keys.BLOCKS, id("auction_house"), () -> new AuctionBlock(BlockBehaviour.Properties.of()));
         }

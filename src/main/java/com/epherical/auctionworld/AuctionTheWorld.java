@@ -21,4 +21,8 @@ public abstract class AuctionTheWorld {
 
     }
 
+
+    public AbstractNetworking<?, ?> getNetworking() {
+        return networking;
+    }
 }

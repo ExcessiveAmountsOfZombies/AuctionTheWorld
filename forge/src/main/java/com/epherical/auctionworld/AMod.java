@@ -38,10 +38,7 @@ public class AMod extends AuctionTheWorld {
         int id = 0;
         networking.registerClientToServer(id++, CreateAuctionClick.class,
                 (createAuctionClick, friendlyByteBuf) -> {},
-                friendlyByteBuf -> new CreateAuctionClick(),
-                (createAuctionClick, context) -> {
-
-                });
+                friendlyByteBuf -> new CreateAuctionClick(), CreateAuctionClick::handle);
 
 
 
@@ -55,6 +52,10 @@ public class AMod extends AuctionTheWorld {
 
     private void commonInit(FMLCommonSetupEvent event) {
 
+    }
+
+    public static AMod getInstance() {
+        return mod;
     }
 
 

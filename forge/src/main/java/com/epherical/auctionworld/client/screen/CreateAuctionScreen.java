@@ -1,7 +1,10 @@
 package com.epherical.auctionworld.client.screen;
 
+import com.epherical.auctionworld.AMod;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
+import com.epherical.auctionworld.menu.CreateAuctionMenu;
+import com.epherical.auctionworld.networking.CreateAuctionClick;
 import com.epherical.auctionworld.object.AuctionItem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -10,14 +13,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class AuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
+public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
 
 
-    private Button auctionScreenButton;
-    private Button browse;
-
-    public AuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
+    public CreateAuctionScreen(CreateAuctionMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
     }
 
@@ -26,13 +26,6 @@ public class AuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
         imageWidth = 512;
         imageHeight = 512;
         super.init();
-        auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
-
-        }).width(80).pos(leftPos + 60, 258).build());
-
-        browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
-
-        }).width(60).pos(leftPos, 258).build());
     }
 
 
@@ -56,7 +49,7 @@ public class AuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
 
 
         int yInc = 0;
-        for (AuctionItem auctionItem : getMenu().getAuctionItems()) {
+        /*for (AuctionItem auctionItem : getMenu().getAuctionItems()) {
             int itemX = this.titleLabelX + 118;
             int itemY = this.titleLabelY + 40 + yInc;
             graphics.renderFakeItem(auctionItem.getAuctionItems().get(0), itemX, itemY);
@@ -65,7 +58,7 @@ public class AuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
             graphics.drawString(this.font, auctionItem.getSeller(), itemX + 220, itemY + 6, 0xFFFFFF, false);
             graphics.drawString(this.font, String.valueOf(auctionItem.getBuyoutPrice()), itemX + 320, itemY + 6, 0xFFFFFF, false);
             yInc += 18;
-        }
+        }*/
         /*graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
         graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);*/
 
