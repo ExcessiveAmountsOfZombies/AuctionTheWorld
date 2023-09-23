@@ -47,10 +47,7 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         super.init();
 
         createAuction = addRenderableWidget(Button.builder(Component.translatable("Create Auction"), button -> {
-            if (validateAndSendToServer()) {
-                // todo; send packet to server with the data
-                System.out.println("OMEGALULL");
-            }
+            validateAndSendToServer();
         }).pos(343 + leftPos, 249 + topPos).width(80).build());
 
         timeSelection = addRenderableWidget(new EditBox(font, 126 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));

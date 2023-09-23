@@ -39,11 +39,10 @@ public class AuctionItem {
 
     public String formatTimeLeft() {
         long until = Instant.now().until(auctionEnds, ChronoUnit.MILLIS);
-        String timeLeft = String.format("%02dH:%02dM:%02dS",
+        return String.format("%02dH:%02dM:%02dS",
                 TimeUnit.MILLISECONDS.toHours(until),
                 TimeUnit.MILLISECONDS.toMinutes(until) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(until)),
                 TimeUnit.MILLISECONDS.toSeconds(until) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(until)));
-       return timeLeft;
     }
 
     public Instant getAuctionStarted() {

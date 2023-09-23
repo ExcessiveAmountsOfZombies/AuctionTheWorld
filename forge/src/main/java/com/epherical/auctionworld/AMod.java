@@ -1,6 +1,7 @@
 package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.client.AModClient;
+import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.epherolib.CommonPlatform;
 import com.epherical.epherolib.ForgePlatform;
@@ -34,7 +35,13 @@ public class AMod extends AuctionTheWorld {
         networking.registerClientToServer(id++, OpenCreateAuction.class,
                 (createAuctionClick, friendlyByteBuf) -> {},
                 friendlyByteBuf -> new OpenCreateAuction(), OpenCreateAuction::handle);
-
+        networking.registerClientToServer(id++, CreateAuctionListing.class,
+                (createAuctionListing, friendlyByteBuf) -> {
+                    friendlyByteBuf.writeInt(createAuctionListing.timeInHours());
+                    friendlyByteBuf.writeInt(createAuctionListing.startPrice());
+                    friendlyByteBuf.writeInt(createAuctionListing.buyoutPrice());
+                }, friendlyByteBuf -> new CreateAuctionListing(friendlyByteBuf.readInt(), friendlyByteBuf.readInt(), friendlyByteBuf.readInt()),
+                CreateAuctionListing::handle);
 
 
         //MinecraftForge.EVENT_BUS.register(this);
