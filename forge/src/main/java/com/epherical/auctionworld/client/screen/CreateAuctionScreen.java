@@ -1,8 +1,10 @@
 package com.epherical.auctionworld.client.screen;
 
+import com.epherical.auctionworld.AMod;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import com.epherical.auctionworld.menu.slot.SelectableSlot;
+import com.epherical.auctionworld.networking.CreateAuctionListing;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -21,7 +23,7 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
     private EditBox timeSelection;
     private Button days;
     private Button hours;
-    private EditBox bidIncrement;
+    //private EditBox bidIncrement;
     private EditBox startingBid;
     private EditBox buyoutPrice;
 
@@ -45,7 +47,10 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         super.init();
 
         createAuction = addRenderableWidget(Button.builder(Component.translatable("Create Auction"), button -> {
-            System.out.println("Wewooweooo");
+            if (validateAndSendToServer()) {
+                // todo; send packet to server with the data
+                System.out.println("OMEGALULL");
+            }
         }).pos(343 + leftPos, 249 + topPos).width(80).build());
 
         timeSelection = addRenderableWidget(new EditBox(font, 126 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));
@@ -53,10 +58,16 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         timeSelection.setTooltip(Tooltip.create(Component.translatable("How much time until the auction expires. Max: 7D or 168H")));
 
         days = addRenderableWidget(Button.builder(Component.literal("D"), button -> {
-            System.out.println("D");
+            button.setFGColor(0x00FF00);
+            button.setFocused(true);
+            hours.setFocused(false);
+            hours.setFGColor(0xFFFFFF);
         }).pos(231 + leftPos, 44 + topPos).width(20).tooltip(Tooltip.create(Component.translatable("How many days until the auction expires"))).build());
         hours = addRenderableWidget(Button.builder(Component.literal("H"), button -> {
-            System.out.println("H");
+            button.setFGColor(0x00FF00);
+            button.setFocused(true);
+            days.setFocused(false);
+            days.setFGColor(0xFFFFFF);
         }).pos(263 + leftPos, 44 + topPos).width(20).tooltip(Tooltip.create(Component.translatable("How many hours until the auction expires"))).build());
         /*bidIncrement = addRenderableWidget(new EditBox(font, 126 + leftPos, 64 + topPos, 100, 20, Component.translatable("Bid Increment")));
         bidIncrement.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
@@ -123,5 +134,41 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         /*graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
         graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);*/
 
+    }
+
+    private void validateAndSendToServer() {
+        int time;
+        if (days.getFGColor() == 0x00FF00) {
+            String value = timeSelection.getValue();
+            time = Integer.parseInt(value);
+            if (time > 7) {
+                // todo; maybe send error msg in screen
+                return;
+            }
+            time *= 24;
+        } else if (hours.getFGColor() == 0x00FF00) {
+            String value = timeSelection.getValue();
+            time = Integer.parseInt(value);
+            if (time > 168) {
+                // todo; maybe send error msg in screen
+                return;
+            }
+        } else {
+            // player didn't select the time... lets go default 24hrs
+            time = 24;
+        }
+
+        if (startingBid.getValue().isEmpty()) {
+            // todo; maybe send error msg in screen
+            return;
+        }
+        int start = Integer.parseInt(startingBid.getValue());
+        int buyout = -1;
+        if (!buyoutPrice.getValue().isEmpty()) {
+            buyout = Integer.parseInt(buyoutPrice.getValue());
+        }
+
+
+        AMod.getInstance().getNetworking().sendToServer(new CreateAuctionListing(time, start, buyout));
     }
 }

@@ -6,9 +6,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 
-public record CreateAuctionClick() {
+public record OpenCreateAuction() {
 
-    public static void handle(CreateAuctionClick auctions, AbstractNetworking.Context<?> context) {
+    public static void handle(OpenCreateAuction auctions, AbstractNetworking.Context<?> context) {
         ServerPlayer player = context.getPlayer();
         if (player != null) {
             player.getServer().execute(() -> {

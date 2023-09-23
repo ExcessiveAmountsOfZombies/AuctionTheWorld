@@ -1,13 +1,11 @@
 package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.client.AModClient;
-import com.epherical.auctionworld.networking.CreateAuctionClick;
+import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.epherolib.CommonPlatform;
 import com.epherical.epherolib.ForgePlatform;
 import com.epherical.epherolib.networking.ForgeNetworking;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
@@ -15,9 +13,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-
-import java.util.TreeMap;
 
 @Mod(Constants.MOD_ID)
 public class AMod extends AuctionTheWorld {
@@ -36,9 +31,9 @@ public class AMod extends AuctionTheWorld {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonInit);
 
         int id = 0;
-        networking.registerClientToServer(id++, CreateAuctionClick.class,
+        networking.registerClientToServer(id++, OpenCreateAuction.class,
                 (createAuctionClick, friendlyByteBuf) -> {},
-                friendlyByteBuf -> new CreateAuctionClick(), CreateAuctionClick::handle);
+                friendlyByteBuf -> new OpenCreateAuction(), OpenCreateAuction::handle);
 
 
 

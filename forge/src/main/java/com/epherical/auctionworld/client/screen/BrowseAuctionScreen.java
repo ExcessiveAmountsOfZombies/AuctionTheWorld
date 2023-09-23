@@ -3,7 +3,7 @@ package com.epherical.auctionworld.client.screen;
 import com.epherical.auctionworld.AMod;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
-import com.epherical.auctionworld.networking.CreateAuctionClick;
+import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.auctionworld.object.AuctionItem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -29,7 +29,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         imageHeight = 512;
         super.init();
         auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
-            AMod.getInstance().getNetworking().sendToServer(new CreateAuctionClick());
+            AMod.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
         }).width(80).pos(leftPos + 60, 258).build());
 
         browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
