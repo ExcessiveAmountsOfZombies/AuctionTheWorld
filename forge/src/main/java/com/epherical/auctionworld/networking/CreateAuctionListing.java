@@ -35,6 +35,7 @@ public record CreateAuctionListing(int timeInHours, int startPrice, int buyoutPr
         }
         AuctionItem auctionItem = new AuctionItem(Instant.now(), Instant.now().plus(listing.timeInHours, ChronoUnit.HOURS), listing.buyoutPrice, player.getScoreboardName(), itemStacks);
         auctionItems.add(auctionItem);
+        player.closeContainer();
     }
 
 }

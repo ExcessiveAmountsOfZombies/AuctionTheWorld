@@ -48,11 +48,11 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
 
         createAuction = addRenderableWidget(Button.builder(Component.translatable("Create Auction"), button -> {
             validateAndSendToServer();
-        }).pos(343 + leftPos, 249 + topPos).width(80).build());
+        }).pos(343 + leftPos, 249 + topPos).width(80).tooltip(Tooltip.create(Component.literal("Don't forget to select the items in your inventory!"))).build());
 
         timeSelection = addRenderableWidget(new EditBox(font, 126 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));
         timeSelection.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
-        timeSelection.setTooltip(Tooltip.create(Component.translatable("How much time until the auction expires. Max: 7D or 168H")));
+        timeSelection.setTooltip(Tooltip.create(Component.translatable("How much time until the auction expires. Max: 7D or 168H. (REQUIRED)")));
 
         days = addRenderableWidget(Button.builder(Component.literal("D"), button -> {
             button.setFGColor(0x00FF00);
@@ -66,16 +66,20 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
             days.setFocused(false);
             days.setFGColor(0xFFFFFF);
         }).pos(263 + leftPos, 44 + topPos).width(20).tooltip(Tooltip.create(Component.translatable("How many hours until the auction expires"))).build());
+
+
         /*bidIncrement = addRenderableWidget(new EditBox(font, 126 + leftPos, 64 + topPos, 100, 20, Component.translatable("Bid Increment")));
         bidIncrement.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
         bidIncrement.setHint(Component.literal("Bid Increment"));
         bidIncrement.setTooltip(Tooltip.create(Component.translatable("Whenever a player bids, how much they have to bid at a minimum.")));*/
+
+
         startingBid = addRenderableWidget(new EditBox(font, 126 + leftPos, 84 + topPos, 100, 20, Component.translatable("Starting Bid")));
         startingBid.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
-        startingBid.setTooltip(Tooltip.create(Component.translatable("What the starting bid will be. This is the minimum price someone must pay to receive the item")));
+        startingBid.setTooltip(Tooltip.create(Component.translatable("What the starting bid will be. This is the minimum price someone must pay to receive the item (REQUIRED)")));
         buyoutPrice = addRenderableWidget(new EditBox(font, 126 + leftPos, 124 + topPos, 100, 20, Component.translatable("Buyout Price")));
         buyoutPrice.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
-        buyoutPrice.setTooltip(Tooltip.create(Component.translatable("How much a user will have to pay to just straight up buy the item. Leave blank to not set one.")));
+        buyoutPrice.setTooltip(Tooltip.create(Component.translatable("How much a user will have to pay to just straight up buy the item. Leave blank to not set one. (OPTIONAL)")));
     }
 
 
@@ -113,24 +117,7 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        //AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
-        //tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
-
-
-        int yInc = 0;
-        /*for (AuctionItem auctionItem : getMenu().getAuctionItems()) {
-            int itemX = this.titleLabelX + 118;
-            int itemY = this.titleLabelY + 40 + yInc;
-            graphics.renderFakeItem(auctionItem.getAuctionItems().get(0), itemX, itemY);
-            graphics.drawString(this.font, auctionItem.formatTimeLeft(), itemX + 120, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, auctionItem.getAuctionItems().get(0).getHoverName(), itemX + 24, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, auctionItem.getSeller(), itemX + 220, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, String.valueOf(auctionItem.getBuyoutPrice()), itemX + 320, itemY + 6, 0xFFFFFF, false);
-            yInc += 18;
-        }*/
-        /*graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);*/
-
+        super.renderLabels(graphics, x, y);
     }
 
     private void validateAndSendToServer() {
