@@ -11,6 +11,6 @@ public interface AuctionStorage {
 
     Map<UUID, AuctionItem> loadAuctionItems();
 
-    boolean saveAuctionItems(List<AuctionItem> items);
+    boolean saveAuctionItems(Map<UUID, AuctionItem> items);
 
 }

@@ -43,7 +43,7 @@ public class FlatAuctionStorage extends WorldBasedStorage implements AuctionStor
     }
 
     @Override
-    public boolean saveAuctionItems(List<AuctionItem> items) {
+    public boolean saveAuctionItems(Map<UUID, AuctionItem> items) {
         try {
             this.writeTagToFile(AuctionItem.saveAuctions(items), resolve());
             return true;

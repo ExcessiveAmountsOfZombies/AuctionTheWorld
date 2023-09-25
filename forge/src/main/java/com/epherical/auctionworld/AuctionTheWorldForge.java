@@ -33,6 +33,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     private AuctionStorage storage;
     private AuctionManager auctionManager;
+    private UserManager userManager;
 
 
     public AuctionTheWorldForge() {
@@ -79,12 +80,18 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         ServerLevel overWorld = server.overworld();
         if (overWorld.equals(event.getLevel())) {
             auctionManager.saveAuctionItems();
+            userManager.saveAllPlayers();
         }
     }
 
     @SubscribeEvent
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
+    }
+
+    @SubscribeEvent
+    public void playerJoinEvent() {
+        userManager.
     }
 
 
@@ -99,5 +106,9 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     public AuctionManager getAuctionManager() {
         return auctionManager;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
     }
 }

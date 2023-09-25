@@ -1,10 +1,15 @@
 package com.epherical.auctionworld.data;
 
+import com.epherical.auctionworld.object.User;
 import com.epherical.epherolib.data.WorldBasedStorage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
+
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.UUID;
 
 public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorage {
 
@@ -16,5 +21,19 @@ public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorag
     @Override
     protected Gson buildGson(GsonBuilder builder) {
         return builder.create();
+    }
+
+    public Path resolve() {
+        return basePath.resolve("players.json");
+    }
+
+    @Override
+    public void savePlayer(User user) {
+
+    }
+
+    @Override
+    public Map<UUID, User> loadUsers() {
+        return null;
     }
 }

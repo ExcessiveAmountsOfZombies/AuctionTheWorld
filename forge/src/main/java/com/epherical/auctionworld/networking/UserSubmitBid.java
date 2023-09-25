@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.networking;
 
 import com.epherical.auctionworld.AuctionTheWorldForge;
+import com.epherical.auctionworld.UserManager;
 import com.epherical.epherolib.networking.AbstractNetworking;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -11,8 +12,10 @@ public record UserSubmitBid(int index, UUID listing, int bidAmount) {
 
     public static void handle(UserSubmitBid bid, AbstractNetworking.Context<?> context) {
         ServerPlayer player = context.getPlayer();
-        // todo; usermanager
-        AuctionTheWorldForge.getInstance().getAuctionManager().userBid();
+
+        AuctionTheWorldForge instance = AuctionTheWorldForge.getInstance();
+        UserManager userManager = instance.getUserManager();
+        instance.getAuctionManager().userBid(userManager.getUserByID(player.getUUID()), bid.listing, bid.bidAmount);
     }
 
 }
