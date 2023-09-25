@@ -3,11 +3,13 @@ package com.epherical.auctionworld.data;
 import com.epherical.auctionworld.object.AuctionItem;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public interface AuctionStorage {
 
 
-    List<AuctionItem> loadAuctionItems();
+    Map<UUID, AuctionItem> loadAuctionItems();
 
     boolean saveAuctionItems(List<AuctionItem> items);
 

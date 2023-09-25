@@ -6,25 +6,27 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionItem {
+
+    private UUID auctionID;
+
     private List<ItemStack> auctionItems;
     private Instant auctionStarted;
-    private Instant auctionEnds;
+    private long timeLeft; // todo; use a timeLeft system, so when the auction is saved, it doesn't become invalid if the server goes down for an extended period of time.
     private int currentPrice;
     private final int buyoutPrice;
-    private int bids;
-    private String lastBidder = "";
     private String seller;
-
     private UUID sellerID;
-
     private int minBidIncrement;
+    private ArrayDeque<Bid> bidStack = new ArrayDeque<>();
 
 
     public AuctionItem(Instant auctionStarted, Instant auctionEnds, int buyoutPrice, String seller, List<ItemStack> itemStacks) {
@@ -42,8 +44,6 @@ public class AuctionItem {
         this.auctionEnds = auctionEnds;
         this.currentPrice = currentPrice;
         this.buyoutPrice = buyoutPrice;
-        this.bids = bids;
-        this.lastBidder = lastBidder;
         this.seller = seller;
         this.sellerID = sellerID;
         //this.minBidIncrement = minBidIncrement;
@@ -58,11 +58,12 @@ public class AuctionItem {
     }
 
     public String formatTimeLeft() {
-        long until = Instant.now().until(auctionEnds, ChronoUnit.MILLIS);
+        // todo; may not work
+        long until = timeLeft;
         return String.format("%02dH:%02dM:%02dS",
-                TimeUnit.MILLISECONDS.toHours(until),
-                TimeUnit.MILLISECONDS.toMinutes(until) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(until)),
-                TimeUnit.MILLISECONDS.toSeconds(until) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(until)));
+                TimeUnit.SECONDS.toHours(until),
+                TimeUnit.SECONDS.toMinutes(until) - TimeUnit.HOURS.toMinutes(TimeUnit.SECONDS.toHours(until)),
+                TimeUnit.SECONDS.toSeconds(until) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(until)));
     }
 
     public Instant getAuctionStarted() {
@@ -93,22 +94,6 @@ public class AuctionItem {
         return buyoutPrice;
     }
 
-    public int getBids() {
-        return bids;
-    }
-
-    public void setBids(int bids) {
-        this.bids = bids;
-    }
-
-    public String getLastBidder() {
-        return lastBidder;
-    }
-
-    public void setLastBidder(String lastBidder) {
-        this.lastBidder = lastBidder;
-    }
-
     public String getSeller() {
         return seller;
     }
@@ -125,9 +110,37 @@ public class AuctionItem {
         this.minBidIncrement = minBidIncrement;
     }
 
+    public UUID getAuctionID() {
+        return auctionID;
+    }
+
+    public void setAuctionID(UUID auctionID) {
+        this.auctionID = auctionID;
+    }
+
+    public UUID getSellerID() {
+        return sellerID;
+    }
+
+    public void setSellerID(UUID sellerID) {
+        this.sellerID = sellerID;
+    }
+
+    public ArrayDeque<Bid> getBidStack() {
+        return bidStack;
+    }
+
+    public void setBidStack(ArrayDeque<Bid> bidStack) {
+        this.bidStack = bidStack;
+    }
+
+    public void addBid(Bid bid) {
+        bidStack.add(bid);
+    }
+
     public static List<AuctionItem> loadAuctions(CompoundTag tag) {
         ListTag auctions = tag.getList("auctions", 0);
-        List<AuctionItem> auctionItems = new ArrayList<>();
+        Map<UUID, AuctionItem> auctionItems = new HashMap<>();
         for (Tag a : auctions) {
             CompoundTag auction = (CompoundTag) a;
             AuctionItem auctionItem = new AuctionItem(loadAllItems(auction),
@@ -139,7 +152,7 @@ public class AuctionItem {
                     auction.getString("lastBidder"),
                     auction.getString("seller"),
                     auction.getUUID("sellerId"));
-            auctionItems.add(auctionItem);
+            auctionItems.put(auctionItem.getAuctionID(), auctionItem);
         }
 
         // todo; finish
@@ -157,10 +170,11 @@ public class AuctionItem {
             single.putLong("endTime", auction.auctionEnds.toEpochMilli());
             single.putInt("currentPrice", auction.currentPrice);
             single.putInt("buyoutPrice", auction.buyoutPrice);
-            single.putInt("bids", auction.bids);
-            single.putString("lastBidder", auction.lastBidder);
+            /*single.putInt("bids", auction.bids);
+            single.putString("lastBidder", auction.lastBidder);*/
             single.putString("seller", auction.seller);
             single.putUUID("sellerId", auction.sellerID);
+            single.putUUID("auctionId", auction.auctionID);
             //single.putInt("minBidIncr", auction.minBidIncrement);
             auctions.add(single);
         }

@@ -28,8 +28,6 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     private SortableButton<AuctionItem> seller;
     private SortableButton<AuctionItem> bid;
 
-    private Comparator<AuctionItem> sortByBid = Comparator.comparing(AuctionItem::getBuyoutPrice);
-
 
     public BrowseAuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -121,7 +119,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
         for (AuctionItem auctionItem : auctionItems) {
             int itemX = this.titleLabelX + 118;
-            int itemY = this.titleLabelY + 40 + yInc;
+            int itemY = this.titleLabelY + 42 + yInc;
             graphics.renderFakeItem(auctionItem.getAuctionItems().get(0), itemX, itemY);
             graphics.drawString(this.font, auctionItem.formatTimeLeft(), itemX + 120, itemY + 6, 0xFFFFFF, false);
             graphics.drawString(this.font, auctionItem.getAuctionItems().get(0).getHoverName(), itemX + 24, itemY + 6, 0xFFFFFF, false);

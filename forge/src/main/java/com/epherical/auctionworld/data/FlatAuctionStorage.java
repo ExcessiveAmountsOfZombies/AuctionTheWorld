@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class FlatAuctionStorage extends WorldBasedStorage implements AuctionStorage {
 
@@ -30,7 +32,7 @@ public class FlatAuctionStorage extends WorldBasedStorage implements AuctionStor
         return basePath.resolve("auctions.json");
     }
 
-    public List<AuctionItem> loadAuctionItems() {
+    public Map<UUID, AuctionItem> loadAuctionItems() {
         try {
             Tag tag = readTagFromFile(resolve());
             return AuctionItem.loadAuctions((CompoundTag) tag);
