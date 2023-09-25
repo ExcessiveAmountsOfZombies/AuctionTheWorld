@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.client;
 
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +34,28 @@ public class SortableButton<T> {
         this.activated = activated;
     }
 
+    public void setReversed(boolean reversed) {
+        this.reversed = reversed;
+    }
+
+    public boolean isReversed() {
+        return reversed;
+    }
+
+    public Component sortDirection(String name) {
+        String direction = "";
+        if (!activated) {
+            direction = "-";
+        }
+        if (activated) {
+            direction = "/\\";
+        }
+        if (activated && reversed) {
+            direction = "\\/";
+        }
+        return Component.literal(name + " " + direction);
+    }
+
     public Comparator<T> getSorter() {
         return sorter;
     }
@@ -41,5 +64,11 @@ public class SortableButton<T> {
         if (activated) {
             list.sort(reversed ? sorter.reversed() : sorter);
         }
+    }
+
+    public enum Sort {
+        UNSORTED(),
+        SORT(),
+        REVERSE()
     }
 }

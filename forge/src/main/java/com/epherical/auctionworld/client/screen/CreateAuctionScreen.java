@@ -1,6 +1,6 @@
 package com.epherical.auctionworld.client.screen;
 
-import com.epherical.auctionworld.AMod;
+import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import com.epherical.auctionworld.menu.slot.SelectableSlot;
@@ -153,6 +153,6 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         }
 
 
-        AMod.getInstance().getNetworking().sendToServer(new CreateAuctionListing(time, start, buyout));
+        AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new CreateAuctionListing(time, start, buyout));
     }
 }

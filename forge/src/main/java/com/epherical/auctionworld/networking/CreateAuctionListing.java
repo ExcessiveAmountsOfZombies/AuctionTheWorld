@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.networking;
 
+import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import com.epherical.auctionworld.menu.slot.SelectableSlot;
 import com.epherical.auctionworld.object.AuctionItem;
@@ -13,8 +14,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.epherical.auctionworld.menu.BrowseAuctionMenu.auctionItems;
 
 public record CreateAuctionListing(int timeInHours, int startPrice, int buyoutPrice) {
 
@@ -33,8 +32,8 @@ public record CreateAuctionListing(int timeInHours, int startPrice, int buyoutPr
                 }
             }
         }
-        AuctionItem auctionItem = new AuctionItem(Instant.now(), Instant.now().plus(listing.timeInHours, ChronoUnit.HOURS), listing.buyoutPrice, player.getScoreboardName(), itemStacks);
-        auctionItems.add(auctionItem);
+        AuctionItem auctionItem = new AuctionItem(itemStacks, Instant.now(), Instant.now().plus(listing.timeInHours, ChronoUnit.HOURS), listing.startPrice, listing.buyoutPrice, 0, "", player.getScoreboardName(), player.getUUID());
+        AuctionTheWorldForge.getInstance().getAuctionManager().addAuctionItem(auctionItem);
         player.closeContainer();
     }
 
