@@ -36,7 +36,7 @@ public class UserManager {
     }
 
     public void saveAllPlayers() {
-
+        playerStorage.saveAllPlayers(players);
     }
 
     public void playerLeft(ServerPlayer player) {

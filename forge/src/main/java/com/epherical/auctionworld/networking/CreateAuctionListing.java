@@ -18,6 +18,7 @@ import java.util.List;
 public record CreateAuctionListing(int timeInHours, int startPrice, int buyoutPrice) {
 
     public static void handle(CreateAuctionListing listing, AbstractNetworking.Context<?> context) {
+        // todo; execute on server
         ServerPlayer player = context.getPlayer();
         AbstractContainerMenu containerMenu = player.containerMenu;
         List<ItemStack> itemStacks = new ArrayList<>();

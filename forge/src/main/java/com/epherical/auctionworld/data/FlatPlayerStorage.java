@@ -36,4 +36,9 @@ public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorag
     public Map<UUID, User> loadUsers() {
         return null;
     }
+
+    @Override
+    public void saveAllPlayers(Map<UUID, User> players) {
+
+    }
 }

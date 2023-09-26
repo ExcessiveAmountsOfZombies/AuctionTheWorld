@@ -12,4 +12,6 @@ public interface PlayerStorage {
 
     Map<UUID, User> loadUsers();
 
+    void saveAllPlayers(Map<UUID, User> players);
+
 }

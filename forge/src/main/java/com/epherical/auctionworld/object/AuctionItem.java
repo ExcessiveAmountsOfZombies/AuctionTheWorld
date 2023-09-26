@@ -57,6 +57,11 @@ public class AuctionItem {
         this.auctionItems = auctionItems;
     }
 
+    public boolean isExpired() {
+        // todo; check if it is expired.
+        return
+    }
+
     public String formatTimeLeft() {
         // todo; may not work
         long until = timeLeft;
@@ -136,6 +141,22 @@ public class AuctionItem {
 
     public void addBid(Bid bid) {
         bidStack.add(bid);
+    }
+
+    public void finishAuction() {
+        for (Bid bid : bidStack) {
+            int bidAmount = bid.getBidAmount();
+            User user = bid.getUser();
+            // we will start at the top of the stack, and check if the user did a valid bid
+            if (!user.hasEnough(bidAmount)) {
+                // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids
+                continue;
+            } else {
+                user.takeCurrency(bidAmount);
+                user.addWinnings(this.auctionItems);
+                // todo; find a way to end the auction now.
+            }
+        }
     }
 
     public static List<AuctionItem> loadAuctions(CompoundTag tag) {

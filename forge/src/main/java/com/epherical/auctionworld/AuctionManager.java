@@ -8,10 +8,11 @@ import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,8 +59,24 @@ public class AuctionManager {
     public void userBid(User user, UUID uuid, int bidAmount) {
         AuctionItem auctionItem = auctions.get(uuid);
         if (auctionItem != null) {
-            // todo; check if auction has expired
+            if (auctionItem.isExpired()) {
+                // todo; check if auction has expired
+                return;
+            }
+
             Bid bid = new Bid(user, bidAmount);
+
+
+            Set<UUID> sentMessages = new HashSet<>();
+            for (Bid previousBids : auctionItem.getBidStack()) {
+                UUID previousID = previousBids.getUser().getUuid();
+                if (!sentMessages.contains(previousID)) {
+                    sentMessages.add(previousID);
+                    // todo; send message to player
+                    previousBids.getUser().sendPlayerMessageIfOnline();
+                }
+            }
+
             auctionItem.addBid(bid);
             // todo; notify previous bidders
             // todo; add additional time

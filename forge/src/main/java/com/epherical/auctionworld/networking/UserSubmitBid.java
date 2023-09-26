@@ -12,7 +12,7 @@ public record UserSubmitBid(int index, UUID listing, int bidAmount) {
 
     public static void handle(UserSubmitBid bid, AbstractNetworking.Context<?> context) {
         ServerPlayer player = context.getPlayer();
-
+        // todo; execute on server
         AuctionTheWorldForge instance = AuctionTheWorldForge.getInstance();
         UserManager userManager = instance.getUserManager();
         instance.getAuctionManager().userBid(userManager.getUserByID(player.getUUID()), bid.listing, bid.bidAmount);
