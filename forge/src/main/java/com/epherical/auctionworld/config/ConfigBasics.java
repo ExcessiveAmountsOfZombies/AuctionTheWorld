@@ -9,5 +9,7 @@ import net.minecraft.world.item.Items;
 public class ConfigBasics {
 
     public static final Item CURRENCY = Items.DIAMOND;
+    public static final int listingFee = -1;
+    public static final int addTimeAfterBid = -1;
 
 }

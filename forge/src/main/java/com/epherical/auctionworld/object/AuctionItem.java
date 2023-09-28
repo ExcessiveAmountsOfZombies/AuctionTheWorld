@@ -26,26 +26,21 @@ public class AuctionItem {
     private String seller;
     private UUID sellerID;
     private int minBidIncrement;
-    private ArrayDeque<Bid> bidStack = new ArrayDeque<>();
+    private ArrayDeque<Bid> bidStack;
 
 
-    public AuctionItem(Instant auctionStarted, Instant auctionEnds, int buyoutPrice, String seller, List<ItemStack> itemStacks) {
-        this.auctionItems = itemStacks;
-        this.auctionStarted = auctionStarted;
-        this.auctionEnds = auctionEnds;
-        this.buyoutPrice = buyoutPrice;
-        this.seller = seller;
-    }
 
-    public AuctionItem(List<ItemStack> auctionItems, Instant auctionStarted, Instant auctionEnds, int currentPrice, int buyoutPrice,
-                       int bids, String lastBidder, String seller, UUID sellerID/*, int minBidIncrement*/) {
+    public AuctionItem(UUID auctionID, List<ItemStack> auctionItems, Instant auctionStarted, long timeLeft, int currentPrice, int buyoutPrice,
+                       String seller, UUID sellerID, ArrayDeque<Bid> bids) {
+        this.auctionID = auctionID;
         this.auctionItems = auctionItems;
         this.auctionStarted = auctionStarted;
-        this.auctionEnds = auctionEnds;
+        this.timeLeft = timeLeft;
         this.currentPrice = currentPrice;
         this.buyoutPrice = buyoutPrice;
         this.seller = seller;
         this.sellerID = sellerID;
+        this.bidStack = bids;
         //this.minBidIncrement = minBidIncrement;
     }
 
@@ -59,7 +54,7 @@ public class AuctionItem {
 
     public boolean isExpired() {
         // todo; check if it is expired.
-        return
+        return timeLeft <= 0;
     }
 
     public String formatTimeLeft() {
@@ -75,24 +70,13 @@ public class AuctionItem {
         return auctionStarted;
     }
 
-    public void setAuctionStarted(Instant auctionStarted) {
-        this.auctionStarted = auctionStarted;
-    }
-
     public Instant getAuctionEnds() {
         return auctionEnds;
     }
 
-    public void setAuctionEnds(Instant auctionEnds) {
-        this.auctionEnds = auctionEnds;
-    }
 
     public int getCurrentPrice() {
         return currentPrice;
-    }
-
-    public void setCurrentPrice(int currentPrice) {
-        this.currentPrice = currentPrice;
     }
 
     public int getBuyoutPrice() {
@@ -103,40 +87,36 @@ public class AuctionItem {
         return seller;
     }
 
-    public void setSeller(String seller) {
-        this.seller = seller;
-    }
-
     public int getMinBidIncrement() {
         return minBidIncrement;
-    }
-
-    public void setMinBidIncrement(int minBidIncrement) {
-        this.minBidIncrement = minBidIncrement;
     }
 
     public UUID getAuctionID() {
         return auctionID;
     }
 
-    public void setAuctionID(UUID auctionID) {
-        this.auctionID = auctionID;
-    }
-
     public UUID getSellerID() {
         return sellerID;
-    }
-
-    public void setSellerID(UUID sellerID) {
-        this.sellerID = sellerID;
     }
 
     public ArrayDeque<Bid> getBidStack() {
         return bidStack;
     }
 
-    public void setBidStack(ArrayDeque<Bid> bidStack) {
-        this.bidStack = bidStack;
+    public long getTimeLeft() {
+        return timeLeft;
+    }
+
+    public void addTime(long timeToAdd) {
+        this.timeLeft += timeToAdd;
+    }
+
+    public void decrementTime() {
+        this.timeLeft--;
+    }
+
+    public int getCurrentBidPrice() {
+        return bidStack.getLast().getBidAmount();
     }
 
     public void addBid(Bid bid) {
@@ -144,6 +124,11 @@ public class AuctionItem {
     }
 
     public void finishAuction() {
+        if (bidStack.isEmpty()) {
+            // todo; give the item back to the user.
+            return;
+        }
+
         for (Bid bid : bidStack) {
             int bidAmount = bid.getBidAmount();
             User user = bid.getUser();
@@ -159,20 +144,21 @@ public class AuctionItem {
         }
     }
 
-    public static List<AuctionItem> loadAuctions(CompoundTag tag) {
+    public static Map<UUID, AuctionItem> loadAuctions(CompoundTag tag) {
         ListTag auctions = tag.getList("auctions", 0);
         Map<UUID, AuctionItem> auctionItems = new HashMap<>();
         for (Tag a : auctions) {
             CompoundTag auction = (CompoundTag) a;
-            AuctionItem auctionItem = new AuctionItem(loadAllItems(auction),
+            AuctionItem auctionItem = new AuctionItem(
+                    auction.getUUID("auctionId"),
+                    loadAllItems(auction),
                     Instant.ofEpochMilli(auction.getLong("startTime")),
-                    Instant.ofEpochMilli(auction.getLong("endTime")),
+                    auction.getLong("timeLeft"),
                     auction.getInt("currentPirce"),
                     auction.getInt("buyoutPrice"),
-                    auction.getInt("bids"),
-                    auction.getString("lastBidder"),
                     auction.getString("seller"),
-                    auction.getUUID("sellerId"));
+                    auction.getUUID("sellerId"),
+                    );
             auctionItems.put(auctionItem.getAuctionID(), auctionItem);
         }
 
@@ -181,14 +167,15 @@ public class AuctionItem {
         return auctionItems;
     }
 
-    public static CompoundTag saveAuctions(List<AuctionItem> auctionItems) {
+    public static CompoundTag saveAuctions(Map<UUID, AuctionItem> auctionItems) {
         ListTag auctions = new ListTag();
         CompoundTag allTag = new CompoundTag();
-        for (AuctionItem auction : auctionItems) {
+        for (AuctionItem auction : auctionItems.values()) {
             CompoundTag single = new CompoundTag();
             saveAllItems(single, auction.auctionItems);
+            single.putUUID("auctionId", auction.auctionID);
             single.putLong("startTime", auction.auctionStarted.toEpochMilli());
-            single.putLong("endTime", auction.auctionEnds.toEpochMilli());
+            single.getLong("timeLeft", auction.timeLeft);
             single.putInt("currentPrice", auction.currentPrice);
             single.putInt("buyoutPrice", auction.buyoutPrice);
             /*single.putInt("bids", auction.bids);
@@ -197,6 +184,7 @@ public class AuctionItem {
             single.putUUID("sellerId", auction.sellerID);
             single.putUUID("auctionId", auction.auctionID);
             //single.putInt("minBidIncr", auction.minBidIncrement);
+
             auctions.add(single);
         }
         allTag.put("auctions", auctions);

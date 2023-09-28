@@ -11,9 +11,11 @@ import com.epherical.epherolib.networking.ForgeNetworking;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
@@ -90,8 +92,13 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     }
 
     @SubscribeEvent
-    public void playerJoinEvent() {
-        userManager.
+    public void playerJoinEvent(PlayerEvent.PlayerLoggedInEvent event) {
+        userManager.playerJoined((ServerPlayer) event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void playerLeaveEvent(PlayerEvent.PlayerLoggedOutEvent event) {
+        userManager.playerLeft((ServerPlayer) event.getEntity());
     }
 
 

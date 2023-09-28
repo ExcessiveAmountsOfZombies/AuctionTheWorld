@@ -1,10 +1,12 @@
 package com.epherical.auctionworld;
 
+import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
 import com.epherical.auctionworld.object.User;
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 
 import java.time.Instant;
@@ -39,6 +41,7 @@ public class AuctionManager {
                     Instant now = Instant.now();
                     for (AuctionItem auction : auctions.values()) {
                         if (now.isAfter(auction.getAuctionEnds())) {
+                            auction.finishAuction();
                             // todo; end the auction here
                             // todo; remove the players currency, give them the items
 
@@ -63,6 +66,11 @@ public class AuctionManager {
                 // todo; check if auction has expired
                 return;
             }
+            if (bidAmount <= auctionItem.getCurrentBidPrice()) {
+                // todo; this bid cannot happen.
+                return;
+            }
+
 
             Bid bid = new Bid(user, bidAmount);
 
@@ -72,14 +80,11 @@ public class AuctionManager {
                 UUID previousID = previousBids.getUser().getUuid();
                 if (!sentMessages.contains(previousID)) {
                     sentMessages.add(previousID);
-                    // todo; send message to player
-                    previousBids.getUser().sendPlayerMessageIfOnline();
+                    previousBids.getUser().sendPlayerMessageIfOnline(Component.translatable("Someone has outbid you for item, %s", "BINGUS"));
                 }
             }
-
             auctionItem.addBid(bid);
-            // todo; notify previous bidders
-            // todo; add additional time
+            auctionItem.addTime(ConfigBasics.addTimeAfterBid > -1 ? ConfigBasics.addTimeAfterBid : 0);
         }
     }
 

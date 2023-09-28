@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public class FlatAuctionStorage extends WorldBasedStorage implements AuctionStor
         } catch (IOException ignored) {
             // file does not currently exist.
         }
-        return new ArrayList<>();
+        return new HashMap<>();
     }
 
     @Override
