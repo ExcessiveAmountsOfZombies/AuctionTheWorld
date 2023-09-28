@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.object;
 
+import com.epherical.auctionworld.AuctionManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class AuctionItem {
 
@@ -70,11 +72,6 @@ public class AuctionItem {
         return auctionStarted;
     }
 
-    public Instant getAuctionEnds() {
-        return auctionEnds;
-    }
-
-
     public int getCurrentPrice() {
         return currentPrice;
     }
@@ -116,26 +113,25 @@ public class AuctionItem {
     }
 
     public int getCurrentBidPrice() {
-        return bidStack.getLast().getBidAmount();
+        return bidStack.getLast().bidAmount();
     }
 
     public void addBid(Bid bid) {
         bidStack.add(bid);
     }
 
-    public void finishAuction() {
+    public void finishAuction(Function<UUID, User> userGetter) {
         if (bidStack.isEmpty()) {
             // todo; give the item back to the user.
             return;
         }
 
         for (Bid bid : bidStack) {
-            int bidAmount = bid.getBidAmount();
-            User user = bid.getUser();
+            int bidAmount = bid.bidAmount();
+            User user = userGetter.apply(bid.user());
             // we will start at the top of the stack, and check if the user did a valid bid
             if (!user.hasEnough(bidAmount)) {
                 // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids
-                continue;
             } else {
                 user.takeCurrency(bidAmount);
                 user.addWinnings(this.auctionItems);
@@ -149,6 +145,14 @@ public class AuctionItem {
         Map<UUID, AuctionItem> auctionItems = new HashMap<>();
         for (Tag a : auctions) {
             CompoundTag auction = (CompoundTag) a;
+            ListTag bidders = auction.getList("bids", 0);
+
+            ArrayDeque<Bid> bids = new ArrayDeque<>();
+            for (int i = 0; i < bidders.size(); i++) {
+                CompoundTag compound = bidders.getCompound(i);
+                bids.add(Bid.deserialize(compound));
+            }
+
             AuctionItem auctionItem = new AuctionItem(
                     auction.getUUID("auctionId"),
                     loadAllItems(auction),
@@ -158,7 +162,7 @@ public class AuctionItem {
                     auction.getInt("buyoutPrice"),
                     auction.getString("seller"),
                     auction.getUUID("sellerId"),
-                    );
+                    bids);
             auctionItems.put(auctionItem.getAuctionID(), auctionItem);
         }
 
@@ -173,9 +177,10 @@ public class AuctionItem {
         for (AuctionItem auction : auctionItems.values()) {
             CompoundTag single = new CompoundTag();
             saveAllItems(single, auction.auctionItems);
+            saveAllBids(single, auction.bidStack);
             single.putUUID("auctionId", auction.auctionID);
             single.putLong("startTime", auction.auctionStarted.toEpochMilli());
-            single.getLong("timeLeft", auction.timeLeft);
+            single.putLong("timeLeft", auction.timeLeft);
             single.putInt("currentPrice", auction.currentPrice);
             single.putInt("buyoutPrice", auction.buyoutPrice);
             /*single.putInt("bids", auction.bids);
@@ -189,6 +194,13 @@ public class AuctionItem {
         }
         allTag.put("auctions", auctions);
         return allTag;
+    }
+
+    private static CompoundTag saveAllBids(CompoundTag tag, ArrayDeque<Bid> bids) {
+        ListTag bidList = new ListTag();
+        bids.descendingIterator().forEachRemaining(bid -> bidList.add(Bid.serialize(bid)));
+        tag.put("bids", bidList);
+        return tag;
     }
 
     private static CompoundTag saveAllItems(CompoundTag tag, List<ItemStack> list) {

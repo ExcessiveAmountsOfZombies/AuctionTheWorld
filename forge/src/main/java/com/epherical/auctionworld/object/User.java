@@ -77,7 +77,7 @@ public class User {
         this.wonAuctionItems.addAll(items);
     }
 
-    public static User loadUser(CompoundTag tag) {
+   /* public static User loadUser(CompoundTag tag) {
         Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("lastKnownItem")));
         return new User()
                 // todo; create user.
@@ -85,6 +85,6 @@ public class User {
 
     public static CompoundTag saveUser() {
         return new CompoundTag(); // todo; save user.
-    }
+    }*/
 
 }

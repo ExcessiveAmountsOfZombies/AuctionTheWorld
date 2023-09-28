@@ -1,17 +1,17 @@
 package com.epherical.auctionworld.networking;
 
+import com.epherical.auctionworld.AuctionManager;
 import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import com.epherical.auctionworld.menu.slot.SelectableSlot;
-import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.epherolib.networking.AbstractNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +33,9 @@ public record CreateAuctionListing(int timeInHours, int startPrice, int buyoutPr
                 }
             }
         }
-        AuctionItem auctionItem = new AuctionItem(itemStacks, Instant.now(), Instant.now().plus(listing.timeInHours, ChronoUnit.HOURS), listing.startPrice, listing.buyoutPrice, 0, "", player.getScoreboardName(), player.getUUID());
-        AuctionTheWorldForge.getInstance().getAuctionManager().addAuctionItem(auctionItem);
+        AuctionManager auctionManager = AuctionTheWorldForge.getInstance().getAuctionManager();
+        auctionManager.addAuctionItem(itemStacks, Instant.now(), Duration.ofHours(listing.timeInHours).getSeconds(),
+                listing.startPrice, listing.buyoutPrice, player.getScoreboardName(), player.getUUID());
         player.closeContainer();
     }
 

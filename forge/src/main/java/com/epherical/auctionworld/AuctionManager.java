@@ -5,11 +5,15 @@ import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
 import com.epherical.auctionworld.object.User;
+import com.google.common.collect.HashBiMap;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,13 +29,15 @@ public class AuctionManager {
     private final Logger LOGGER = LogUtils.getLogger();
 
     private AuctionStorage storage;
+    private UserManager userManager;
     private Map<UUID, AuctionItem> auctions;
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
 
-    public AuctionManager(AuctionStorage storage, boolean client) {
+    public AuctionManager(AuctionStorage storage, boolean client, UserManager userManager) {
         this.storage = storage;
+        this.userManager = userManager;
         if (client) {
             this.auctions = new HashMap<>();
         } else {
@@ -40,8 +46,9 @@ public class AuctionManager {
                 if (!auctions.isEmpty()) {
                     Instant now = Instant.now();
                     for (AuctionItem auction : auctions.values()) {
-                        if (now.isAfter(auction.getAuctionEnds())) {
-                            auction.finishAuction();
+                        auction.decrementTime();
+                        /*if (now.isAfter(auction.getAuctionEnds())) {
+                            auction.finishAuction(this.userManager::getUserByID);
                             // todo; end the auction here
                             // todo; remove the players currency, give them the items
 
@@ -50,7 +57,7 @@ public class AuctionManager {
                             //  we need to go down to the next person and use their bid.
                         } else {
 
-                        }
+                        }*/
                     }
 
                 }
@@ -59,8 +66,8 @@ public class AuctionManager {
     }
 
 
-    public void userBid(User user, UUID uuid, int bidAmount) {
-        AuctionItem auctionItem = auctions.get(uuid);
+    public void userBid(User user, UUID auctionId, int bidAmount) {
+        AuctionItem auctionItem = auctions.get(auctionId);
         if (auctionItem != null) {
             if (auctionItem.isExpired()) {
                 // todo; check if auction has expired
@@ -72,20 +79,23 @@ public class AuctionManager {
             }
 
 
-            Bid bid = new Bid(user, bidAmount);
-
+            Bid bid = new Bid(user.getUuid(), bidAmount);
 
             Set<UUID> sentMessages = new HashSet<>();
             for (Bid previousBids : auctionItem.getBidStack()) {
-                UUID previousID = previousBids.getUser().getUuid();
+                UUID previousID = previousBids.user();
                 if (!sentMessages.contains(previousID)) {
                     sentMessages.add(previousID);
-                    previousBids.getUser().sendPlayerMessageIfOnline(Component.translatable("Someone has outbid you for item, %s", "BINGUS"));
+                    sendPlayerMessageIfOnline(previousBids.user(), Component.translatable("Someone has outbid you for item, %s", "BINGUS"));
                 }
             }
             auctionItem.addBid(bid);
             auctionItem.addTime(ConfigBasics.addTimeAfterBid > -1 ? ConfigBasics.addTimeAfterBid : 0);
         }
+    }
+
+    public void sendPlayerMessageIfOnline(UUID uuid, Component message) {
+        userManager.getUserByID(uuid).sendPlayerMessageIfOnline(message);
     }
 
 
@@ -95,13 +105,21 @@ public class AuctionManager {
         }
     }
 
-    public void addAuctionItem(AuctionItem auctionItem) {
-        // todo; handle collision here...
-        //  containskey check, if it does, make a new UUID
-        auctions.add(auctionItem);
+    /**
+     * Add a new auction item to the list, checking for existing auctions with the same UUID.
+     */
+    public void addAuctionItem(List<ItemStack> auctionItems, Instant auctionStarted, long timeLeft, int currentPrice, int buyoutPrice,
+                               String seller, UUID sellerID) {
+        UUID uuid = UUID.randomUUID();
+        if (!auctions.containsKey(uuid)) {
+            AuctionItem item = new AuctionItem(uuid, auctionItems, auctionStarted, timeLeft, currentPrice, buyoutPrice, seller, sellerID, new ArrayDeque<>());
+            auctions.put(uuid, item);
+        } else {
+            addAuctionItem(auctionItems, auctionStarted, timeLeft, currentPrice, buyoutPrice, seller, sellerID);
+        }
     }
 
-    public List<AuctionItem> getAuctions() {
-        return auctions;
+    public Collection<AuctionItem> getAuctions() {
+        return auctions.values();
     }
 }

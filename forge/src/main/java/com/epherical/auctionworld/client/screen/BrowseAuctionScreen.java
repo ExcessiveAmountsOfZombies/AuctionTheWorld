@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     private SortableButton<AuctionItem> seller;
     private SortableButton<AuctionItem> bid;
 
+    private List<AuctionItem> items;
+
 
     public BrowseAuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -42,7 +45,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
             AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
         }).width(80).pos(leftPos + 60, 258).build());
 
-        time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getAuctionEnds), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
+        time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
                 button -> {
                     button.setMessage(time.sortDirection("Time"));
                     time.setActivated(true);
@@ -83,6 +86,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                 .pos(leftPos + 442, topPos + 26).width(67)
                 .build()));
 
+        items = new ArrayList<>(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
 
 
         /*browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
@@ -108,7 +112,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
         //AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
         //tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
-        List<AuctionItem> auctionItems = AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions();
+        List<AuctionItem> auctionItems = items;
         seller.sort(auctionItems);
         bid.sort(auctionItems);
         item.sort(auctionItems);

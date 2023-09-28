@@ -3,6 +3,8 @@ package com.epherical.auctionworld;
 import com.epherical.auctionworld.client.AModClient;
 import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.data.FlatAuctionStorage;
+import com.epherical.auctionworld.data.FlatPlayerStorage;
+import com.epherical.auctionworld.data.PlayerStorage;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.epherolib.CommonPlatform;
@@ -33,7 +35,8 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     private static AuctionTheWorldForge mod;
 
-    private AuctionStorage storage;
+    private AuctionStorage auctionStorage;
+    private PlayerStorage playerStorage;
     private AuctionManager auctionManager;
     private UserManager userManager;
 
@@ -64,7 +67,8 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     private void clientInit(FMLClientSetupEvent event) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> {
-            auctionManager = new AuctionManager(null, true);
+            // todo; ... usermanager null here might be a problem?
+            auctionManager = new AuctionManager(null, true, null);
             return AModClient::initClient;
         });
         MinecraftForge.EVENT_BUS.register(new AModClient());
@@ -72,8 +76,10 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     @SubscribeEvent
     public void serverStarting(ServerStartedEvent event) {
-        storage = new FlatAuctionStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw");
-        auctionManager = new AuctionManager(storage, false);
+        auctionStorage = new FlatAuctionStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw");
+        playerStorage = new FlatPlayerStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw");
+        userManager = new UserManager(playerStorage);
+        auctionManager = new AuctionManager(auctionStorage, false, userManager);
     }
 
     @SubscribeEvent
