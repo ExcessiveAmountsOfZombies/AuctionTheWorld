@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.client.screen;
 
 import com.epherical.auctionworld.AuctionTheWorldForge;
+import com.epherical.auctionworld.client.AuctionListWidget;
 import com.epherical.auctionworld.client.SortableButton;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
@@ -29,7 +30,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     private SortableButton<AuctionItem> seller;
     private SortableButton<AuctionItem> bid;
 
-    private List<AuctionItem> items;
+    private AuctionListWidget list;
 
 
     public BrowseAuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
@@ -41,6 +42,11 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         imageWidth = 512;
         imageHeight = 512;
         super.init();
+        list = new AuctionListWidget(minecraft, this.width + 121, this.height, topPos + 45, 253, 25);
+        list.setRenderBackground(false);
+        list.setRenderTopAndBottom(false);
+        //list.setLeftPos(leftPos);
+        addWidget(list);
         auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
             AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
         }).width(80).pos(leftPos + 60, 258).build());
@@ -86,7 +92,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                 .pos(leftPos + 442, topPos + 26).width(67)
                 .build()));
 
-        items = new ArrayList<>(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
+        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
 
 
         /*browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
@@ -99,6 +105,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     public void render(GuiGraphics graphics, int x, int y, float delta) {
         this.renderBackground(graphics);
         super.render(graphics, x, y, delta);
+        list.render(graphics, x, y, delta);
     }
 
     @Override
@@ -112,26 +119,10 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
         //AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
         //tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
-        List<AuctionItem> auctionItems = items;
-        seller.sort(auctionItems);
+        /*seller.sort(auctionItems);
         bid.sort(auctionItems);
         item.sort(auctionItems);
-        time.sort(auctionItems);
-
-
-        int yInc = 0;
-
-        for (AuctionItem auctionItem : auctionItems) {
-            int itemX = this.titleLabelX + 118;
-            int itemY = this.titleLabelY + 42 + yInc;
-            graphics.renderFakeItem(auctionItem.getAuctionItems().get(0), itemX, itemY);
-            graphics.drawString(this.font, auctionItem.formatTimeLeft(), itemX + 120, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, auctionItem.getAuctionItems().get(0).getHoverName(), itemX + 24, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, auctionItem.getSeller(), itemX + 220, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, String.valueOf(auctionItem.getBuyoutPrice()), itemX + 320, itemY + 6, 0xFFFFFF, false);
-            graphics.drawString(this.font, String.valueOf(auctionItem.getCurrentPrice()), itemX + 320, itemY + -2, 0xFFFFFF, false);
-            yInc += 18;
-        }
+        time.sort(auctionItems);*/
         /*graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
         graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);*/
 

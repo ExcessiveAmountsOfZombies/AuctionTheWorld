@@ -5,7 +5,6 @@ import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
 import com.epherical.auctionworld.object.User;
-import com.google.common.collect.HashBiMap;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionManager {
@@ -33,6 +33,7 @@ public class AuctionManager {
     private Map<UUID, AuctionItem> auctions;
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> future;
 
 
     public AuctionManager(AuctionStorage storage, boolean client, UserManager userManager) {
@@ -42,7 +43,7 @@ public class AuctionManager {
             this.auctions = new HashMap<>();
         } else {
             this.auctions = storage.loadAuctionItems();
-            service.scheduleAtFixedRate(() -> {
+            future = service.scheduleAtFixedRate(() -> {
                 if (!auctions.isEmpty()) {
                     Instant now = Instant.now();
                     for (AuctionItem auction : auctions.values()) {
@@ -62,6 +63,12 @@ public class AuctionManager {
 
                 }
             }, 1L, 1L, TimeUnit.SECONDS);
+        }
+    }
+
+    public void stop() {
+        if (future != null) {
+            future.cancel(false);
         }
     }
 

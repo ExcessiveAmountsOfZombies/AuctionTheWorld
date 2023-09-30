@@ -95,6 +95,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     @SubscribeEvent
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
+        auctionManager.stop();
     }
 
     @SubscribeEvent

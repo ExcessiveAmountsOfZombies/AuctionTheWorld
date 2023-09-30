@@ -141,11 +141,11 @@ public class AuctionItem {
     }
 
     public static Map<UUID, AuctionItem> loadAuctions(CompoundTag tag) {
-        ListTag auctions = tag.getList("auctions", 0);
+        ListTag auctions = tag.getList("auctions", 10);
         Map<UUID, AuctionItem> auctionItems = new HashMap<>();
         for (Tag a : auctions) {
             CompoundTag auction = (CompoundTag) a;
-            ListTag bidders = auction.getList("bids", 0);
+            ListTag bidders = auction.getList("bids", 10);
 
             ArrayDeque<Bid> bids = new ArrayDeque<>();
             for (int i = 0; i < bidders.size(); i++) {
@@ -165,8 +165,6 @@ public class AuctionItem {
                     bids);
             auctionItems.put(auctionItem.getAuctionID(), auctionItem);
         }
-
-        // todo; finish
 
         return auctionItems;
     }
