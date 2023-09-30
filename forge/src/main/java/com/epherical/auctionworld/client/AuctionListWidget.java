@@ -3,20 +3,16 @@ package com.epherical.auctionworld.client;
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Transformation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Vector3f;
-import org.lwjgl.system.windows.POINT;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -91,16 +87,35 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             }
 
             graphics.drawString(font, item.getSeller(), left + 220, top + 8, 0xFFFFFF, false);
-            graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
             graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 328, top + 2, 0xFFFFFF, false);
+            graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
 
-
+            ItemStack currency = new ItemStack(ConfigBasics.CURRENCY);
 
             PoseStack pose = graphics.pose();
+            if (hovered) {
+                pose.pushPose();
+                pose.translate(0f, 10f, 800f);
+                if (x > left && x < left + 115) {
+                    List<Component> tooltipFromItem = Screen.getTooltipFromItem(minecraft, itemStack);
+                    graphics.renderTooltip(font, tooltipFromItem, itemStack.getTooltipImage(), itemStack, x, y);
+                } else if (x > left + 316 && x < left + 328) {
+                    // this is for the currency tooltip
+                    graphics.renderTooltip(font, currency, x, y);
+                } else if (x > left + 328 && y < top + 8) {
+                    graphics.renderTooltip(font, Component.translatable("Current Bidding Price"), x, y);
+                } else if (x > left + 328 && y > top + 8 && y < top + 25) {
+                    graphics.renderTooltip(font, Component.translatable("Buyout Price"), x, y);
+                }
+                pose.popPose();
+            }
+
+
+            pose = graphics.pose();
             pose.pushPose();
             pose.scale(0.5f, 0.5f, 0.5f);
             pose.translate(left + 308, top + 15, 0f);
-            graphics.renderFakeItem(new ItemStack(ConfigBasics.CURRENCY), left + 328, top + 15 );
+            graphics.renderFakeItem(currency, left + 328, top + 15);
             pose.scale(2f, 2f, 2f);
             graphics.pose().popPose();
         }
@@ -110,9 +125,9 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             super.renderBack(graphics, row, top, left, width, height, x, y, hovered, delta);
             Entry hovered1 = AuctionListWidget.this.getHovered();
             if (hovered) {
-                graphics.fill(left, top, left + width -3, top + 24, 0xff215580);
+                graphics.fill(left, top, left + width - 3, top + 24, 0xff215581);
             } else {
-                graphics.fill(left, top, left + width -3, top + 24, 0xff42a4f5);
+                graphics.fill(left, top, left + width - 3, top + 24, 0xff42a4f5);
             }
             //System.out.println(hovered1);
 
