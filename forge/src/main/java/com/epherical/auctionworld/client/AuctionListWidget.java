@@ -1,13 +1,22 @@
 package com.epherical.auctionworld.client;
 
+import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.object.AuctionItem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Transformation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.font.FontManager;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.world.item.ItemStack;
+import org.joml.Vector3f;
+import org.lwjgl.system.windows.POINT;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,12 +72,37 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         public void render(GuiGraphics graphics, int row, int top, int left, int width, int height, int x, int y, boolean hovered, float delta) {
             //left -= 246;
             Font font = AuctionListWidget.this.minecraft.font;
-            graphics.renderFakeItem(item.getAuctionItems().get(0), left, top);
-            graphics.drawString(font, item.formatTimeLeft(), left + 120, top + 6, 0xFFFFFF, false);
-            graphics.drawString(font, item.getAuctionItems().get(0).getHoverName(), left + 24, top + 6, 0xFFFFFF, false);
-            graphics.drawString(font, item.getSeller(), left + 220, top + 6, 0xFFFFFF, false);
-            graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 320, top + 6, 0xFFFFFF, false);
-            graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 320, top + -2, 0xFFFFFF, false);
+            ItemStack itemStack = item.getAuctionItems().get(0);
+            graphics.renderFakeItem(itemStack, left, top + 4);
+            graphics.drawString(font, item.formatTimeLeft(), left + 120, top + 8, 0xFFFFFF, false);
+
+            int width1 = font.width(itemStack.getHoverName());
+            if (width1 >= 95) {
+                PoseStack poseStack = graphics.pose();
+                poseStack.pushPose();
+                poseStack.scale(0.5f, 0.5f, 0.5f);
+                poseStack.translate((left + 24), (top + 8), 1f);
+                //poseStack.translate((1/scale), (1/scale), 1f);
+                graphics.drawString(font, itemStack.getHoverName(), left + 24, top + 8, 0xFFFFFF, false);
+                poseStack.scale(2f, 2f, 2f);
+                poseStack.popPose();
+            } else {
+                graphics.drawString(font, itemStack.getHoverName(), left + 24, top + 8, 0xFFFFFF, false);
+            }
+
+            graphics.drawString(font, item.getSeller(), left + 220, top + 8, 0xFFFFFF, false);
+            graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
+            graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 328, top + 2, 0xFFFFFF, false);
+
+
+
+            PoseStack pose = graphics.pose();
+            pose.pushPose();
+            pose.scale(0.5f, 0.5f, 0.5f);
+            pose.translate(left + 308, top + 15, 0f);
+            graphics.renderFakeItem(new ItemStack(ConfigBasics.CURRENCY), left + 328, top + 15 );
+            pose.scale(2f, 2f, 2f);
+            graphics.pose().popPose();
         }
 
         @Override

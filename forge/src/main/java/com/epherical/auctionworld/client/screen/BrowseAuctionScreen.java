@@ -53,7 +53,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
         time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
                 button -> {
-                    button.setMessage(time.sortDirection("Time"));
+                    //button.setMessage(time.sortDirection("Time"));
                     time.setActivated(true);
                     item.setActivated(false);
                     seller.setActivated(false);
@@ -62,7 +62,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         item = new SortableButton<>(false, Comparator.comparing(auctionItem -> auctionItem.getAuctionItems().get(0).getHoverName().getString()),
                 this.addRenderableWidget(Button.builder(Component.literal("Item -"),
                                 button -> {
-                                    button.setMessage(item.sortDirection("Item"));
+                                    //button.setMessage(item.sortDirection("Item"));
                                     time.setActivated(false);
                                     item.setActivated(true);
                                     seller.setActivated(false);
@@ -72,7 +72,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                         .build()));
         seller = new SortableButton<>(false, Comparator.comparing(AuctionItem::getSeller), this.addRenderableWidget(Button.builder(Component.literal("Seller -"),
                         button -> {
-                            button.setMessage(seller.sortDirection("Seller"));
+                            //button.setMessage(seller.sortDirection("Seller"));
                             seller.setActivated(true);
                             time.setActivated(false);
                             item.setActivated(false);
@@ -81,9 +81,9 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                         })
                 .pos(leftPos + 342, topPos + 26).width(100)
                 .build()));
-        bid = new SortableButton<>(false, Comparator.comparing(AuctionItem::getBuyoutPrice), this.addRenderableWidget(Button.builder(Component.literal("Buyout -"),
+        bid = new SortableButton<>(false, Comparator.comparing(AuctionItem::getBuyoutPrice), this.addRenderableWidget(Button.builder(Component.literal("Price -"),
                         button -> {
-                            button.setMessage(bid.sortDirection("Buyout"));
+                            //button.setMessage(bid.sortDirection("Buyout"));
                             bid.setActivated(true);
                             time.setActivated(false);
                             item.setActivated(false);
