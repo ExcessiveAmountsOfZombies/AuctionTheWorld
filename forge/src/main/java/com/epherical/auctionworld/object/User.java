@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.object;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,6 +21,8 @@ public class User {
     private int currencyAmount;
     @Nullable
     private transient ServerPlayer player;
+
+    private NonNullList<ClaimedItem> claimedItems;
 
     private List<ItemStack> wonAuctionItems = new ArrayList<>();
 

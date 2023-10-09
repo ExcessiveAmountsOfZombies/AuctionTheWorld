@@ -48,6 +48,9 @@ public class AuctionManager {
                     Instant now = Instant.now();
                     for (AuctionItem auction : auctions.values()) {
                         auction.decrementTime();
+                        if (auction.isExpired()) {
+                            auction.finishAuction(this.userManager::getUserByID);
+                        }
                         /*if (now.isAfter(auction.getAuctionEnds())) {
                             auction.finishAuction(this.userManager::getUserByID);
                             // todo; end the auction here

@@ -23,12 +23,14 @@ public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorag
         return builder.create();
     }
 
-    public Path resolve() {
-        return basePath.resolve("players.json");
+
+    public Path resolve(UUID uuid) {
+        return basePath.resolve(uuid.toString() + ".json");
     }
 
     @Override
     public void savePlayer(User user) {
+
 
     }
 

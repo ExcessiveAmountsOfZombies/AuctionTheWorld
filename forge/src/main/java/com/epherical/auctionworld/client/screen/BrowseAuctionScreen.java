@@ -49,7 +49,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         addWidget(list);
         auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
             AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
-        }).width(80).pos(leftPos + 60, 258).build());
+        }).width(80).pos(leftPos + 75, 258).build());
 
         time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
                 button -> {
@@ -106,6 +106,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         this.renderBackground(graphics);
         super.render(graphics, x, y, delta);
         list.render(graphics, x, y, delta);
+        this.renderTooltip(graphics, x, y + 1);
     }
 
     @Override

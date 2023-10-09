@@ -50,7 +50,7 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
             validateAndSendToServer();
         }).pos(343 + leftPos, 249 + topPos).width(80).tooltip(Tooltip.create(Component.literal("Don't forget to select the items in your inventory!"))).build());
 
-        timeSelection = addRenderableWidget(new EditBox(font, 126 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));
+        timeSelection = addRenderableWidget(new EditBox(font, 129 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));
         timeSelection.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
         timeSelection.setTooltip(Tooltip.create(Component.translatable("How much time until the auction expires. Max: 7D or 168H. (REQUIRED)")));
 
@@ -74,10 +74,10 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         bidIncrement.setTooltip(Tooltip.create(Component.translatable("Whenever a player bids, how much they have to bid at a minimum.")));*/
 
 
-        startingBid = addRenderableWidget(new EditBox(font, 126 + leftPos, 84 + topPos, 100, 20, Component.translatable("Starting Bid")));
+        startingBid = addRenderableWidget(new EditBox(font, 129 + leftPos, 84 + topPos, 100, 20, Component.translatable("Starting Bid")));
         startingBid.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
         startingBid.setTooltip(Tooltip.create(Component.translatable("What the starting bid will be. This is the minimum price someone must pay to receive the item (REQUIRED)")));
-        buyoutPrice = addRenderableWidget(new EditBox(font, 126 + leftPos, 124 + topPos, 100, 20, Component.translatable("Buyout Price")));
+        buyoutPrice = addRenderableWidget(new EditBox(font, 129 + leftPos, 124 + topPos, 100, 20, Component.translatable("Buyout Price")));
         buyoutPrice.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
         buyoutPrice.setTooltip(Tooltip.create(Component.translatable("How much a user will have to pay to just straight up buy the item. Leave blank to not set one. (OPTIONAL)")));
     }
@@ -117,7 +117,7 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+        //super.renderLabels(graphics, x, y);
     }
 
     private void validateAndSendToServer() {
