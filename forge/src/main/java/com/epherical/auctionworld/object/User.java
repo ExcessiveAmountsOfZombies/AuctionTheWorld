@@ -1,11 +1,14 @@
 package com.epherical.auctionworld.object;
 
+import com.epherical.auctionworld.config.ConfigBasics;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,17 +27,22 @@ public class User {
 
     private NonNullList<ClaimedItem> claimedItems;
 
-    private List<ItemStack> wonAuctionItems = new ArrayList<>();
-
     // We can take this last known currency item, and if the item changes in the config
     // we can withdraw all the deposited currency from the block into some other block for
     // the player to withdraw.
     private Item lastKnownCurrencyItem;
+    // todo; lastKnownCurrencyItem.
 
     public User(UUID uuid, String name, int currency) {
+        this(uuid, name, currency, NonNullList.create(), ConfigBasics.CURRENCY);
+    }
+
+    private User(UUID uuid, String name, int currency, NonNullList<ClaimedItem> items, Item lastKnownCurrencyItem) {
         this.uuid = uuid;
         this.name = name;
         this.currencyAmount = currency;
+        this.claimedItems = items;
+        this.lastKnownCurrencyItem = lastKnownCurrencyItem;
     }
 
     public void setPlayer(ServerPlayer player) {
@@ -68,26 +76,63 @@ public class User {
         this.currencyAmount -= amountToTake;
     }
 
-    public List<ItemStack> getWonAuctionItems() {
-        return wonAuctionItems;
+    public String getName() {
+        return name;
     }
 
-    public void setWonAuctionItems(List<ItemStack> wonAuctionItems) {
-        this.wonAuctionItems = wonAuctionItems;
-    }
-
-    public void addWinnings(List<ItemStack> items) {
-        this.wonAuctionItems.addAll(items);
-    }
-
-   /* public static User loadUser(CompoundTag tag) {
+    public static User loadUser(CompoundTag tag) {
         Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("lastKnownItem")));
-        return new User()
-                // todo; create user.
+        int amount = tag.getInt("currencyAmount");
+        String name = tag.getString("name");
+        UUID uuid = tag.getUUID("uuid");
+        NonNullList<ClaimedItem> items = NonNullList.create();
+        loadAllItems(tag, NonNullList.create());
+        return new User(uuid, name, amount, items, item);
     }
 
-    public static CompoundTag saveUser() {
-        return new CompoundTag(); // todo; save user.
-    }*/
+    public CompoundTag saveUser() {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("currencyAmount", currencyAmount);
+        tag.putString("lastKnownItem", BuiltInRegistries.ITEM.getKey(lastKnownCurrencyItem).toString());
+        tag.putString("name", name);
+        tag.putUUID("uuid", uuid);
+        saveAllItems(tag, claimedItems);
+        return tag;
+    }
+
+    private static CompoundTag saveAllItems(CompoundTag tag, NonNullList<ClaimedItem> list) {
+        return saveAllItems(tag, list, true);
+    }
+
+    private static CompoundTag saveAllItems(CompoundTag tag, NonNullList<ClaimedItem> list, boolean force) {
+        ListTag listOfItems = new ListTag();
+
+        for (ClaimedItem claimedItem : list) {
+            if (!claimedItem.itemStack().isEmpty()) {
+                CompoundTag itemTag = new CompoundTag();
+                claimedItem.itemStack().save(itemTag);
+                itemTag.putString("type", claimedItem.type().getSerializedName());
+                listOfItems.add(itemTag);
+            }
+        }
+
+        if (!listOfItems.isEmpty() || force) {
+            tag.put("Items", listOfItems);
+        }
+
+        return tag;
+    }
+
+
+    private static void loadAllItems(CompoundTag compoundTag, NonNullList<ClaimedItem> nonNullList) {
+        ListTag items = compoundTag.getList("Items", 10);
+
+        for(int i = 0; i < items.size(); ++i) {
+            CompoundTag slottedItem = items.getCompound(i);
+            //int slot = slottedItem.getByte("Slot") & 255;
+            ClaimedItem stack = new ClaimedItem(ClaimedItem.ClaimType.valueOf(slottedItem.getString("type").toUpperCase()), ItemStack.of(slottedItem));
+            nonNullList.add(stack);
+        }
+    }
 
 }
