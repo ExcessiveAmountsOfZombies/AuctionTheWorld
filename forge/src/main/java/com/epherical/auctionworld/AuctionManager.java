@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,22 +47,17 @@ public class AuctionManager {
             future = service.scheduleAtFixedRate(() -> {
                 if (!auctions.isEmpty()) {
                     Instant now = Instant.now();
-                    for (AuctionItem auction : auctions.values()) {
+                    List<UUID> expiredAuctions = new ArrayList<>();
+                    for (Map.Entry<UUID, AuctionItem> entry : auctions.entrySet()) {
+                        AuctionItem auction = entry.getValue();
                         auction.decrementTime();
                         if (auction.isExpired()) {
                             auction.finishAuction(this.userManager::getUserByID);
+                            expiredAuctions.add(entry.getKey());
                         }
-                        /*if (now.isAfter(auction.getAuctionEnds())) {
-                            auction.finishAuction(this.userManager::getUserByID);
-                            // todo; end the auction here
-                            // todo; remove the players currency, give them the items
-
-                            // todo; we need to keep track of who has bid, and if they have enough currency
-                            //  if they don't have enough currency at the end, (trying to game the system? already will have checks in place to stop fraud bids)
-                            //  we need to go down to the next person and use their bid.
-                        } else {
-
-                        }*/
+                    }
+                    for (UUID expiredAuction : expiredAuctions) {
+                        auctions.remove(expiredAuction);
                     }
 
                 }

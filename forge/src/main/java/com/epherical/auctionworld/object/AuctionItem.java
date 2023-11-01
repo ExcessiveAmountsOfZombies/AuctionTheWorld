@@ -1,6 +1,5 @@
 package com.epherical.auctionworld.object;
 
-import com.epherical.auctionworld.AuctionManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -122,7 +121,10 @@ public class AuctionItem {
 
     public void finishAuction(Function<UUID, User> userGetter) {
         if (bidStack.isEmpty()) {
-            // todo; give the item back to the user.
+            // todo; verify giving the items back to the user works.
+            User owner = userGetter.apply(this.sellerID);
+            owner.addWinnings(this.auctionItems, ClaimedItem.ClaimType.EXPIRED_LISTING);
+            // todo; also send message.
             return;
         }
 
@@ -130,12 +132,13 @@ public class AuctionItem {
             int bidAmount = bid.bidAmount();
             User user = userGetter.apply(bid.user());
             // we will start at the top of the stack, and check if the user did a valid bid
-            if (!user.hasEnough(bidAmount)) {
-                // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids
-            } else {
+            if (user.hasEnough(bidAmount)) {
                 user.takeCurrency(bidAmount);
-                user.addWinnings(this.auctionItems);
+                user.addWinnings(this.auctionItems, ClaimedItem.ClaimType.WON_LISTING);
                 // todo; find a way to end the auction now.
+                return;
+            } else {
+                // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids
             }
         }
     }
@@ -158,7 +161,7 @@ public class AuctionItem {
                     loadAllItems(auction),
                     Instant.ofEpochMilli(auction.getLong("startTime")),
                     auction.getLong("timeLeft"),
-                    auction.getInt("currentPirce"),
+                    auction.getInt("currentPrice"),
                     auction.getInt("buyoutPrice"),
                     auction.getString("seller"),
                     auction.getUUID("sellerId"),

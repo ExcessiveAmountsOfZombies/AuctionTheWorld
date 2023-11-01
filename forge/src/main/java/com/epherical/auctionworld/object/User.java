@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.object;
 
 import com.epherical.auctionworld.config.ConfigBasics;
+import com.epherical.auctionworld.util.ClaimedItemUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class User {
+public class User implements DelegatedContainer {
 
     private final UUID uuid;
     private String name;
@@ -74,6 +76,17 @@ public class User {
 
     public void takeCurrency(int amountToTake) {
         this.currencyAmount -= amountToTake;
+    }
+
+    public NonNullList<ClaimedItem> getClaimedItems() {
+        return claimedItems;
+    }
+
+    public void addWinnings(List<ItemStack> itemStacks, ClaimedItem.ClaimType claimType) {
+        for (ItemStack itemStack : itemStacks) {
+            ClaimedItem claimedItem = new ClaimedItem(claimType, itemStack);
+            claimedItems.add(claimedItem);
+        }
     }
 
     public String getName() {
@@ -134,5 +147,68 @@ public class User {
             nonNullList.add(stack);
         }
     }
+
+    @Override
+    public int getContainerSize() {
+        return claimedItems.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return claimedItems.isEmpty();
+    }
+
+    @Override
+    public ItemStack getItem(int pSlot) {
+        if (pSlot < claimedItems.size()) {
+            return claimedItems.get(pSlot).itemStack();
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    @Override
+    public ItemStack removeItem(int pSlot, int pAmount) {
+        ItemStack itemStack = ClaimedItemUtil.removeItem(claimedItems, pSlot, pAmount);
+        if (!itemStack.isEmpty()) {
+            this.setChanged();
+        }
+        return itemStack;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int pSlot) {
+        ItemStack itemstack = claimedItems.get(pSlot).itemStack();
+        if (itemstack.isEmpty()) {
+            return ItemStack.EMPTY;
+        } else {
+            this.claimedItems.remove(pSlot);
+            return itemstack;
+        }
+    }
+
+    @Override
+    public void setItem(int pSlot, ItemStack pStack) {
+        // you can't set it. yuikesss
+    }
+
+    @Override
+    public void setChanged() {
+        // maybe do something here in the future
+
+    }
+
+    @Override
+    public boolean stillValid(Player pPlayer) {
+        return true;
+    }
+
+    @Override
+    public void clearContent() {
+        this.claimedItems.clear();
+        this.setChanged();
+    }
+
+
 
 }

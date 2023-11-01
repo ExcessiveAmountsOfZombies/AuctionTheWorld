@@ -1,6 +1,8 @@
 package com.epherical.auctionworld.menu;
 
 import com.epherical.auctionworld.listener.RegisterListener;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -11,15 +13,23 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
 
 
     public BrowseAuctionMenu(int id, Inventory inventory) {
+        this(id, inventory, new SimpleContainer(9));
+    }
+
+    public BrowseAuctionMenu(int id, Inventory inventory, Container container) {
         super(RegisterListener.BROWSE_AUCTION_MENU, id);
 
 
-        /*for (int row = 0; row < 3; ++row) {
+        for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col){
-                this.addSlot(new Slot())
+                this.addSlot(new Slot(container, col + row * 3, 13 + col * 18, 256 + row * 18) {
+                    @Override
+                    public boolean mayPlace(ItemStack pStack) {
+                        return false;
+                    }
+                });
             }
-        }*/
-
+        }
 
         // player inventory
         for (int row = 0; row < 3; ++row) {

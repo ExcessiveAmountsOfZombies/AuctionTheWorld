@@ -1,6 +1,8 @@
 package com.epherical.auctionworld.block;
 
+import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
+import com.epherical.auctionworld.object.User;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -35,6 +37,9 @@ public class AuctionBlock extends Block {
     @Nullable
     @Override
     public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
-        return new SimpleMenuProvider((id, inventory, player) -> new BrowseAuctionMenu(id, inventory), CONTAINER_TITLE);
+        return new SimpleMenuProvider((id, inventory, player) -> {
+            User user = AuctionTheWorldForge.getInstance().getUserManager().getUserByID(player.getUUID());
+            return new BrowseAuctionMenu(id, inventory, user);
+        }, CONTAINER_TITLE);
     }
 }

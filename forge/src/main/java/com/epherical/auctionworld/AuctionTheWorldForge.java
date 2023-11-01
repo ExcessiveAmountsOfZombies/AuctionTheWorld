@@ -1,6 +1,7 @@
 package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.client.AModClient;
+import com.epherical.auctionworld.command.ClaimCommand;
 import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.data.FlatAuctionStorage;
 import com.epherical.auctionworld.data.FlatPlayerStorage;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -63,6 +65,11 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
 
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void commandRegisterEvent(RegisterCommandsEvent event) {
+        ClaimCommand.registerCommand(event.getDispatcher());
     }
 
     private void clientInit(FMLClientSetupEvent event) {
