@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.data;
 
 import com.epherical.auctionworld.object.User;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
 import java.util.UUID;
@@ -11,6 +12,8 @@ public interface PlayerStorage {
     void savePlayer(User user);
 
     Map<UUID, User> loadUsers();
+
+    User loadUser(ServerPlayer player);
 
     void saveAllPlayers(Map<UUID, User> players);
 

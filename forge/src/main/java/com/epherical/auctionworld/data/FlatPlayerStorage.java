@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.LevelResource;
 import org.slf4j.Logger;
 
@@ -67,6 +68,17 @@ public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorag
            LOGGER.warn("FolderMissing {}", basePath, e);
         }
         return new HashMap<>();
+    }
+
+    @Override
+    public User loadUser(ServerPlayer player) {
+        Path resolve = resolve(player.getUUID());
+        Tag tag;
+        try {
+            tag = readTagFromFile(resolve);
+            return User.loadUser((CompoundTag) tag);
+        } catch (IOException ignored) {}
+        return new User(player.getUUID(), player.getScoreboardName(), 0);
     }
 
     @Override

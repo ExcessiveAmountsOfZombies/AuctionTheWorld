@@ -29,10 +29,14 @@ public class UserManager {
 
     public void playerJoined(ServerPlayer player) {
         if (!players.containsKey(player.getUUID())) {
-            User user = new User(player.getUUID(), player.getScoreboardName(), 0);
+            User user = playerStorage.loadUser(player);
             players.put(player.getUUID(), user);
             playerStorage.savePlayer(user);
         }
+    }
+
+    public void loadPlayers() {
+        this.players = playerStorage.loadUsers();
     }
 
     public void saveAllPlayers() {

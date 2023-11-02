@@ -35,10 +35,6 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new Slot(inventory, col + row * 9 + 9, 176 + col * 18, 258 + row * 18) {
-                    @Override
-                    public boolean mayPlace(ItemStack pStack) {
-                        return false;
-                    }
 
                     @Override
                     public boolean mayPickup(Player pPlayer) {
@@ -51,10 +47,6 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
         // player hotbar
         for (int row = 0; row < 9; ++row) {
             this.addSlot(new Slot(inventory, row, 176 + row * 18, 316) {
-                @Override
-                public boolean mayPlace(ItemStack pStack) {
-                    return false;
-                }
 
                 @Override
                 public boolean mayPickup(Player pPlayer) {

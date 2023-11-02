@@ -82,11 +82,12 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     }
 
     @SubscribeEvent
-    public void serverStarting(ServerStartedEvent event) {
+    public void serverStarted(ServerStartedEvent event) {
         auctionStorage = new FlatAuctionStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw");
-        playerStorage = new FlatPlayerStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw");
+        playerStorage = new FlatPlayerStorage(LevelResource.ROOT, event.getServer(), "epherical/auctiontw/players");
         userManager = new UserManager(playerStorage);
         auctionManager = new AuctionManager(auctionStorage, false, userManager);
+        userManager.loadPlayers();
     }
 
     @SubscribeEvent

@@ -99,7 +99,7 @@ public class User implements DelegatedContainer {
         String name = tag.getString("name");
         UUID uuid = tag.getUUID("uuid");
         NonNullList<ClaimedItem> items = NonNullList.create();
-        loadAllItems(tag, NonNullList.create());
+        loadAllItems(tag, items);
         return new User(uuid, name, amount, items, item);
     }
 
@@ -172,7 +172,12 @@ public class User implements DelegatedContainer {
         ItemStack itemStack = ClaimedItemUtil.removeItem(claimedItems, pSlot, pAmount);
         if (!itemStack.isEmpty()) {
             this.setChanged();
+            if (claimedItems.get(pSlot).itemStack().isEmpty()) {
+                claimedItems.remove(pSlot);
+            }
+            return itemStack;
         }
+        claimedItems.remove(pSlot);
         return itemStack;
     }
 
