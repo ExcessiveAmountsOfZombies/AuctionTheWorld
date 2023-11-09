@@ -50,6 +50,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonInit);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(AModClient::tooltipRegister);
 
         int id = 0;
         networking.registerClientToServer(id++, OpenCreateAuction.class,
@@ -73,6 +74,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     }
 
     private void clientInit(FMLClientSetupEvent event) {
+
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> {
             // todo; ... usermanager null here might be a problem?
             auctionManager = new AuctionManager(null, true, null);

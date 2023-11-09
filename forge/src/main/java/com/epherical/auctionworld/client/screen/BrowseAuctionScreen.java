@@ -17,6 +17,8 @@ import net.minecraft.world.entity.player.Inventory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
@@ -92,7 +94,13 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                 .pos(leftPos + 442, topPos + 26).width(67)
                 .build()));
 
-        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
+
+        Consumer<AuctionListWidget.Entry> entryConsumer = entry -> {
+            //addRenderableWidget(entry.getBidButton());
+        };
+
+        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions(), entryConsumer);
+
 
 
         /*browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
@@ -100,6 +108,11 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         }).width(60).pos(leftPos, 258).build());*/
     }
 
+    @Override
+    protected void containerTick() {
+        super.containerTick();
+        list.tick();
+    }
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float delta) {

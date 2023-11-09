@@ -3,6 +3,8 @@ package com.epherical.auctionworld.object;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
 import java.time.Instant;
@@ -15,7 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class AuctionItem {
+public class AuctionItem implements TooltipComponent {
 
     private UUID auctionID;
 
@@ -121,10 +123,10 @@ public class AuctionItem {
 
     public void finishAuction(Function<UUID, User> userGetter) {
         if (bidStack.isEmpty()) {
-            // todo; verify giving the items back to the user works.
             User owner = userGetter.apply(this.sellerID);
             owner.addWinnings(this.auctionItems, ClaimedItem.ClaimType.EXPIRED_LISTING);
-            // todo; also send message.
+            owner.sendPlayerMessageIfOnline(Component.literal("No one bid on your listing, so it has been returned to you."));
+            // todo; send better message.
             return;
         }
 
@@ -135,7 +137,6 @@ public class AuctionItem {
             if (user.hasEnough(bidAmount)) {
                 user.takeCurrency(bidAmount);
                 user.addWinnings(this.auctionItems, ClaimedItem.ClaimType.WON_LISTING);
-                // todo; find a way to end the auction now.
                 return;
             } else {
                 // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids

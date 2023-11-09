@@ -1,31 +1,56 @@
 package com.epherical.auctionworld.client;
 
+import com.epherical.auctionworld.client.screen.BrowseAuctionScreen;
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListWidget.Entry> {
+
+    private final Button bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
+        System.out.println("Howdy boys!");
+    }).width(32).build();
+
+    private final EditBox bidAmt;
+
+    private final Button buyoutButton = Button.builder(Component.translatable("Purchase"), pButton -> {
+
+    }).width(120).build();
+    private boolean tooltipActive = false;
 
 
     public AuctionListWidget(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
         super(minecraft, width, height, y0, y1, itemHeight);
+        this.bidAmt = new EditBox(minecraft.font, -100, -100, 70, 20, Component.translatable("Bid Amount"));
     }
 
-    public void addEntries(Collection<AuctionItem> items) {
+
+
+    public void tick() {
+        bidAmt.tick();
+    }
+
+    public void addEntries(Collection<AuctionItem> items, Consumer<Entry> entryConsumer) {
         for (AuctionItem item : items) {
-            addEntry(new Entry(item));
+            Entry entry = new Entry(item);
+            addEntry(entry);
         }
     }
 
@@ -50,10 +75,34 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         return super.addEntry(entry);
     }
 
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (bidButton.mouseClicked(pMouseX, pMouseY, pButton) || buyoutButton.mouseClicked(pMouseX, pMouseY, pButton) || bidAmt.mouseClicked(pMouseX, pMouseY, pButton)) {
+            return true;
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        return bidAmt.charTyped(pCodePoint, pModifiers) || super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        return bidAmt.keyPressed(pKeyCode, pScanCode, pModifiers) || super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+
 
     public class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
+
         private AuctionItem item;
+
+        private double clickedX;
+        private double clickedY;
+
 
         public Entry(AuctionItem item) {
             this.item = item;
@@ -63,6 +112,7 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         public List<? extends NarratableEntry> narratables() {
             return List.of();
         }
+
 
         @Override
         public void render(GuiGraphics graphics, int row, int top, int left, int width, int height, int x, int y, boolean hovered, float delta) {
@@ -90,6 +140,8 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 328, top + 2, 0xFFFFFF, false);
             graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
 
+            //System.out.println(getSelected());
+
             ItemStack currency = new ItemStack(ConfigBasics.CURRENCY);
 
             PoseStack pose = graphics.pose();
@@ -110,6 +162,38 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
                 pose.popPose();
             }
 
+            if (this.equals(getSelected())) {
+                ArrayList<Component> stupid = new ArrayList<>();
+                stupid.add(Component.translatable("stupiddd"));
+                graphics.pose().pushPose();
+                graphics.pose().translate(0, 0, 532f);
+                bidButton.setX((int) (clickedX + 84));
+                bidButton.setY((int) (clickedY + 20));
+                bidButton.render(graphics, x, y, delta);
+
+                buyoutButton.setX((int) (clickedX + 12));
+                buyoutButton.setY((int) (clickedY + 50));
+                buyoutButton.render(graphics, x, y, delta);
+
+                bidAmt.setX((int) (clickedX + 12));
+                bidAmt.setY((int) (clickedY + 20));
+                bidAmt.render(graphics, x, y, delta);
+
+                graphics.pose().translate(0, 0, -532f);
+                graphics.pose().popPose();
+                graphics.renderTooltip(font, stupid, Optional.of((item)), (int) clickedX, (int) clickedY);
+                tooltipActive = true;
+            } else if (!tooltipActive) {
+                bidButton.setX(-100);
+                bidButton.setY(-100);
+
+                bidAmt.setX(-100);
+                bidAmt.setY(-100);
+
+                buyoutButton.setX(-100);
+                buyoutButton.setY(-100);
+            }
+
 
             pose = graphics.pose();
             pose.pushPose();
@@ -123,14 +207,28 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         @Override
         public void renderBack(GuiGraphics graphics, int row, int top, int left, int width, int height, int x, int y, boolean hovered, float delta) {
             super.renderBack(graphics, row, top, left, width, height, x, y, hovered, delta);
-            Entry hovered1 = AuctionListWidget.this.getHovered();
-            if (hovered) {
+            if ((hovered && !tooltipActive) || this.equals(getSelected())) {
                 graphics.fill(left, top, left + width - 3, top + 24, 0xff215581);
             } else {
                 graphics.fill(left, top, left + width - 3, top + 24, 0xff42a4f5);
             }
             //System.out.println(hovered1);
 
+        }
+
+        @Override
+        public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+            boolean b = super.mouseClicked(pMouseX, pMouseY, pButton);
+            if (this.equals(getSelected())) {
+                setSelected(null);
+                tooltipActive = false;
+            } else {
+                setSelected(this);
+                clickedX = pMouseX;
+                clickedY = pMouseY;
+                bidAmt.setFocused(true);
+            }
+            return b;
         }
 
         @Override
