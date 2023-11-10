@@ -5,7 +5,11 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
+
+import java.util.List;
 
 public class BiddingTooltipClientComponent implements ClientTooltipComponent {
 
@@ -17,7 +21,7 @@ public class BiddingTooltipClientComponent implements ClientTooltipComponent {
 
     @Override
     public int getHeight() {
-        return 70;
+        return 90;
     }
 
     @Override
@@ -28,7 +32,11 @@ public class BiddingTooltipClientComponent implements ClientTooltipComponent {
     @Override
     public void renderText(Font pFont, int pMouseX, int pMouseY, Matrix4f pMatrix, MultiBufferSource.BufferSource pBufferSource) {
         ClientTooltipComponent.super.renderText(pFont, pMouseX, pMouseY, pMatrix, pBufferSource);
-        pFont.drawInBatch("howdy", (float)pMouseX, (float)pMouseY, -1, true, pMatrix, pBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+        List<FormattedCharSequence> split = pFont.split(Component.translatable("Send a bid, or outright purchase the item for %s", item.getBuyoutPrice()), 120);
+        for (int i = 0; i < split.size(); i++) {
+            pFont.drawInBatch(split.get(i), (float) pMouseX, (float) (pMouseY + (i * 9)), -1, true, pMatrix, pBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+        }
+
     }
 
     @Override

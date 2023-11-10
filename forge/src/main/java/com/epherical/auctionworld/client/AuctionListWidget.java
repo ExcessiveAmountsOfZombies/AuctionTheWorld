@@ -1,7 +1,9 @@
 package com.epherical.auctionworld.client;
 
-import com.epherical.auctionworld.client.screen.BrowseAuctionScreen;
+import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.config.ConfigBasics;
+import com.epherical.auctionworld.networking.UserSubmitBid;
+import com.epherical.auctionworld.networking.UserSubmitBuyout;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -16,38 +18,42 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListWidget.Entry> {
-
-    private final Button bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
-        System.out.println("Howdy boys!");
-    }).width(32).build();
-
     private final EditBox bidAmt;
 
-    private final Button buyoutButton = Button.builder(Component.translatable("Purchase"), pButton -> {
+    private final Button bidButton;
 
-    }).width(120).build();
+    private final Button buyoutButton;
     private boolean tooltipActive = false;
 
 
     public AuctionListWidget(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
         super(minecraft, width, height, y0, y1, itemHeight);
         this.bidAmt = new EditBox(minecraft.font, -100, -100, 70, 20, Component.translatable("Bid Amount"));
+        this.bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
+            Entry selected = getSelected();
+            if (selected != null) {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBid(selected.item.getAuctionID(), Integer.parseInt(bidAmt.getValue())));
+            }
+        }).width(32).build();
+        this.buyoutButton = Button.builder(Component.translatable("Purchase"), pButton -> {
+            Entry selected = getSelected();
+            if (selected != null) {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBuyout(selected.item.getAuctionID()));
+            }
+        }).width(120).build();
     }
-
 
 
     public void tick() {
         bidAmt.tick();
     }
 
-    public void addEntries(Collection<AuctionItem> items, Consumer<Entry> entryConsumer) {
+    public void addEntries(Collection<AuctionItem> items) {
         for (AuctionItem item : items) {
             Entry entry = new Entry(item);
             addEntry(entry);
@@ -92,7 +98,6 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
         return bidAmt.keyPressed(pKeyCode, pScanCode, pModifiers) || super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
-
 
 
     public class Entry extends ContainerObjectSelectionList.Entry<Entry> {
@@ -163,25 +168,24 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             }
 
             if (this.equals(getSelected())) {
-                ArrayList<Component> stupid = new ArrayList<>();
-                stupid.add(Component.translatable("stupiddd"));
                 graphics.pose().pushPose();
                 graphics.pose().translate(0, 0, 532f);
+
                 bidButton.setX((int) (clickedX + 84));
-                bidButton.setY((int) (clickedY + 20));
+                bidButton.setY((int) (clickedY + 40));
                 bidButton.render(graphics, x, y, delta);
 
                 buyoutButton.setX((int) (clickedX + 12));
-                buyoutButton.setY((int) (clickedY + 50));
+                buyoutButton.setY((int) (clickedY + 70));
                 buyoutButton.render(graphics, x, y, delta);
 
                 bidAmt.setX((int) (clickedX + 12));
-                bidAmt.setY((int) (clickedY + 20));
+                bidAmt.setY((int) (clickedY + 40));
                 bidAmt.render(graphics, x, y, delta);
 
                 graphics.pose().translate(0, 0, -532f);
                 graphics.pose().popPose();
-                graphics.renderTooltip(font, stupid, Optional.of((item)), (int) clickedX, (int) clickedY);
+                graphics.renderTooltip(font, List.of(), Optional.of((item)), (int) clickedX, (int) clickedY);
                 tooltipActive = true;
             } else if (!tooltipActive) {
                 bidButton.setX(-100);

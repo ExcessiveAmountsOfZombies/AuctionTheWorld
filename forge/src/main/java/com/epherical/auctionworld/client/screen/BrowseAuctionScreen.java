@@ -93,13 +93,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                         })
                 .pos(leftPos + 442, topPos + 26).width(67)
                 .build()));
-
-
-        Consumer<AuctionListWidget.Entry> entryConsumer = entry -> {
-            //addRenderableWidget(entry.getBidButton());
-        };
-
-        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions(), entryConsumer);
+        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
 
 
 

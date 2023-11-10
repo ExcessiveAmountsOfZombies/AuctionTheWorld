@@ -12,6 +12,8 @@ public abstract class AuctionTheWorld {
         this.networking = networking;
         int id = 0;
 
+
+
         // TODO; determine packets
 
         // todo; write networking to handle sending auction listings to player
