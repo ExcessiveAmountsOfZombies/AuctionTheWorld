@@ -71,10 +71,36 @@ public class AuctionManager {
         }
     }
 
+    public void userBuyOut(User user, UUID auctionId) {
+        AuctionItem auctionItem = getAuctionItem(auctionId);
+        if (auctionItem != null) {
+
+            // todo; abstract it out??
+            if (auctionItem.getSellerID().equals(user.getUuid())) {
+                return;
+            }
+            if (auctionItem.isExpired()) {
+                return;
+            }
+            if (user.hasEnough(auctionItem.getBuyoutPrice())) {
+                userBid(user, auctionId, auctionItem.getBuyoutPrice());
+                auctionItem.finishAuction(userManager::getUserByID);
+            } else {
+                // todo; send a message saying they don't have enough money;
+            }
+        }
+    }
+
+    public AuctionItem getAuctionItem(UUID auctionId) {
+        return auctions.get(auctionId);
+    }
 
     public void userBid(User user, UUID auctionId, int bidAmount) {
-        AuctionItem auctionItem = auctions.get(auctionId);
+        AuctionItem auctionItem = getAuctionItem(auctionId);
         if (auctionItem != null) {
+            if (auctionItem.getSellerID().equals(user.getUuid())) {
+                return; // todo; user can't bid on their own item. send a message
+            }
             if (auctionItem.isExpired()) {
                 // todo; check if auction has expired
                 return;

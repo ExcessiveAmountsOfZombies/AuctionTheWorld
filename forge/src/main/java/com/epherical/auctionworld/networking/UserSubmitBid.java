@@ -12,7 +12,6 @@ public record UserSubmitBid(UUID listing, int bidAmount) {
 
     public static void handle(UserSubmitBid bid, AbstractNetworking.Context<?> context) {
         ServerPlayer player = context.getPlayer();
-        // todo; you can't bid on your own listing.
         AuctionTheWorldForge instance = AuctionTheWorldForge.getInstance();
         UserManager userManager = instance.getUserManager();
         instance.getAuctionManager().userBid(userManager.getUserByID(player.getUUID()), bid.listing, bid.bidAmount);

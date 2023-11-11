@@ -10,9 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -160,6 +162,10 @@ public class User implements DelegatedContainer {
 
     @Override
     public ItemStack getItem(int pSlot) {
+        if (pSlot == 9) {
+            return new ItemStack(lastKnownCurrencyItem, currencyAmount);
+        }
+
         if (pSlot < claimedItems.size()) {
             return claimedItems.get(pSlot).itemStack();
         } else {
@@ -169,6 +175,14 @@ public class User implements DelegatedContainer {
 
     @Override
     public ItemStack removeItem(int pSlot, int pAmount) {
+        if (pAmount > 64) {
+            pAmount = 64;
+        }
+        if (pSlot == 9) {
+            currencyAmount -= pAmount;
+            return new ItemStack(lastKnownCurrencyItem, pAmount);
+        }
+
         ItemStack itemStack = ClaimedItemUtil.removeItem(claimedItems, pSlot, pAmount);
         if (!itemStack.isEmpty()) {
             this.setChanged();
@@ -183,6 +197,12 @@ public class User implements DelegatedContainer {
 
     @Override
     public ItemStack removeItemNoUpdate(int pSlot) {
+        if (pSlot == 9) {
+            currencyAmount = 0;
+            // todo; config currency;
+            return new ItemStack(Items.DIAMOND);
+        }
+
         ItemStack itemstack = claimedItems.get(pSlot).itemStack();
         if (itemstack.isEmpty()) {
             return ItemStack.EMPTY;
@@ -194,7 +214,10 @@ public class User implements DelegatedContainer {
 
     @Override
     public void setItem(int pSlot, ItemStack pStack) {
-        // you can't set it. yuikesss
+        // todo; config currency
+        if (pStack.is(Items.DIAMOND) && pSlot == 10) {
+            currencyAmount += pStack.getCount();
+        }
     }
 
     @Override
@@ -214,6 +237,8 @@ public class User implements DelegatedContainer {
         this.setChanged();
     }
 
-
-
+    @Override
+    public int getMaxStackSize() {
+        return Integer.MAX_VALUE;
+    }
 }

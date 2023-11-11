@@ -145,7 +145,6 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 328, top + 2, 0xFFFFFF, false);
             graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
 
-            //System.out.println(getSelected());
 
             ItemStack currency = new ItemStack(ConfigBasics.CURRENCY);
 
