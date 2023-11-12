@@ -140,7 +140,7 @@ public class AuctionFilterManager {
         }
 
         public void beginRenderText(GuiGraphics graphics, Font font, Integer x, Integer y, int level) {
-            graphics.drawString(font, "Categories", x, y, 0xFFFFFF);
+            //graphics.drawString(font, "Categories", x, y, 0xFFFFFF);
             renderText(graphics, font, x, y, level);
         }
         public int renderText(GuiGraphics graphics, Font font, Integer x, Integer y, int level) {

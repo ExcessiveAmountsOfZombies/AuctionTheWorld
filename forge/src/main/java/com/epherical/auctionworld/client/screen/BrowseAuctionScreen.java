@@ -3,7 +3,9 @@ package com.epherical.auctionworld.client.screen;
 import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.client.AuctionListWidget;
 import com.epherical.auctionworld.client.SortableButton;
+import com.epherical.auctionworld.data.AuctionFilterManager;
 import com.epherical.auctionworld.listener.RegisterListener;
+import com.epherical.auctionworld.listener.TagListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.auctionworld.networking.SlotManipulation;
@@ -20,6 +22,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -151,14 +154,15 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        //AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
-        //tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
+        // todo; filtering function
+       // AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
+       // tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
         /*seller.sort(auctionItems);
         bid.sort(auctionItems);
         item.sort(auctionItems);
         time.sort(auctionItems);*/
-        /*graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
-        graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);*/
+        //graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+        //graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
 
     }
 }

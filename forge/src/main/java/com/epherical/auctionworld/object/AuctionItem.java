@@ -3,6 +3,7 @@ package com.epherical.auctionworld.object;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
@@ -232,5 +233,18 @@ public class AuctionItem implements TooltipComponent {
         }
 
         return itemStacks;
+    }
+
+    public void networkSerialize(FriendlyByteBuf buf) {
+        buf.writeUUID(auctionID);
+        buf.writeItem(auctionItems.get(0));
+        buf.writeLong(timeLeft);
+        buf.writeInt(currentPrice);
+        buf.writeInt(buyoutPrice);
+        buf.writeUtf(seller);
+    }
+
+    public static AuctionItem networkDeserialize(FriendlyByteBuf buf) {
+        return new AuctionItem(buf.readUUID(), List.of(buf.readItem()), null, buf.readLong(), buf.readInt(), buf.readInt(), buf.readUtf(), null, new ArrayDeque<>());
     }
 }

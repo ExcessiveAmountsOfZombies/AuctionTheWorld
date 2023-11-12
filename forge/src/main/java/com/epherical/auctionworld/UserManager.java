@@ -2,6 +2,7 @@ package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.data.PlayerStorage;
 import com.epherical.auctionworld.object.User;
+import net.minecraft.Util;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public class UserManager {
 
     public UserManager(PlayerStorage playerStorage) {
         this.playerStorage = playerStorage;
+        players.put(Util.NIL_UUID, new User(Util.NIL_UUID, "Server", 0));
     }
 
     public User getUserByID(UUID uuid) {
@@ -44,7 +46,7 @@ public class UserManager {
     }
 
     public void playerLeft(ServerPlayer player) {
-        // todo??? might not care about when players leave
+        playerStorage.savePlayer(getUserByID(player.getUUID()));
     }
 
     public PlayerStorage getPlayerStorage() {

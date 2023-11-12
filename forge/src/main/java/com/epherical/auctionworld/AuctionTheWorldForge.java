@@ -1,6 +1,7 @@
 package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.client.AModClient;
+import com.epherical.auctionworld.client.What;
 import com.epherical.auctionworld.command.ClaimCommand;
 import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.data.FlatAuctionStorage;
@@ -8,6 +9,7 @@ import com.epherical.auctionworld.data.FlatPlayerStorage;
 import com.epherical.auctionworld.data.PlayerStorage;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
+import com.epherical.auctionworld.networking.S2CSendAuctionListings;
 import com.epherical.auctionworld.networking.SlotManipulation;
 import com.epherical.auctionworld.networking.UserSubmitBid;
 import com.epherical.auctionworld.networking.UserSubmitBuyout;
@@ -54,7 +56,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientInit);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonInit);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(AModClient::tooltipRegister);
+        DistExecutor.unsafeCallWhenOn(Dist.CLIENT, What::get);
 
         int id = 0;
         networking.registerClientToServer(id++, OpenCreateAuction.class,
@@ -78,6 +80,13 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
             buf.writeVarInt(slotManipulation.slot());
             buf.writeEnum(slotManipulation.action());
         }, buf -> new SlotManipulation(buf.readVarInt(), buf.readEnum(Action.class)), SlotManipulation::handle);
+        networking.registerServerToClient(id++, S2CSendAuctionListings.class, (s2CSendAuctionListings, friendlyByteBuf) -> {
+            auctionManager.networkSerializeAuctions(friendlyByteBuf);
+        }, friendlyByteBuf -> {
+            // bad way to do this... but w/e
+            auctionManager.networkDeserialize(friendlyByteBuf);
+            return new S2CSendAuctionListings();
+        }, S2CSendAuctionListings::handle);
 
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -121,6 +130,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
         auctionManager.stop();
+        auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
     }
 
     @SubscribeEvent

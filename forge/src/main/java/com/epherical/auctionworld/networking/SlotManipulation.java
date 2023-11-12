@@ -11,9 +11,6 @@ import net.minecraft.world.item.Items;
 
 
 public record SlotManipulation(int slot, Action action) {
-    // todo; the method for handling everything became poorly designed once I added shop blocks. whoops.
-
-
     public static void handle(SlotManipulation slotManipulation, AbstractNetworking.Context<?> context) {
         ServerPlayer player = context.getPlayer();
         if (player != null) {
@@ -61,8 +58,8 @@ public record SlotManipulation(int slot, Action action) {
     }
 
     private void removeSingleSlot(ServerPlayer player, User blockEntity) {
-        switch (this.slot) {
-            case User.CURRENCY_SLOT -> blockEntity.emptyCurrency(player);
+        if (this.slot == User.CURRENCY_SLOT) {
+            blockEntity.emptyCurrency(player);
         }
     }
 

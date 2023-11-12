@@ -6,6 +6,7 @@ import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
 import com.epherical.auctionworld.object.User;
 import com.mojang.logging.LogUtils;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
@@ -29,6 +30,9 @@ public class AuctionManager {
 
     private final Logger LOGGER = LogUtils.getLogger();
 
+    private Instant lastUpdated;
+
+
     private AuctionStorage storage;
     private UserManager userManager;
     private Map<UUID, AuctionItem> auctions;
@@ -42,8 +46,25 @@ public class AuctionManager {
         this.userManager = userManager;
         if (client) {
             this.auctions = new HashMap<>();
+            future = service.scheduleAtFixedRate(() -> {
+                if (!auctions.isEmpty()) {
+                    List<UUID> expiredAuctions = new ArrayList<>();
+                    for (Map.Entry<UUID, AuctionItem> entry : auctions.entrySet()) {
+                        AuctionItem auction = entry.getValue();
+                        auction.decrementTime();
+                        if (auction.isExpired()) {
+                            expiredAuctions.add(entry.getKey());
+                        }
+                    }
+                    for (UUID expiredAuction : expiredAuctions) {
+                        auctions.remove(expiredAuction);
+                    }
+
+                }
+            }, 1L, 1L, TimeUnit.SECONDS);
         } else {
             this.auctions = storage.loadAuctionItems();
+            this.lastUpdated = Instant.now();
             future = service.scheduleAtFixedRate(() -> {
                 if (!auctions.isEmpty()) {
                     Instant now = Instant.now();
@@ -71,10 +92,24 @@ public class AuctionManager {
         }
     }
 
+    public void networkSerializeAuctions(FriendlyByteBuf byteBuf) {
+        byteBuf.writeInt(auctions.size());
+        for (AuctionItem value : auctions.values()) {
+            value.networkSerialize(byteBuf);
+        }
+    }
+
+    public void networkDeserialize(FriendlyByteBuf buf) {
+        int size = buf.readInt();
+        for (int i = 0; i < size; i++) {
+            AuctionItem auctionItem = AuctionItem.networkDeserialize(buf);
+            auctions.put(auctionItem.getAuctionID(), auctionItem);
+        }
+    }
+
     public void userBuyOut(User user, UUID auctionId) {
         AuctionItem auctionItem = getAuctionItem(auctionId);
         if (auctionItem != null) {
-
             // todo; abstract it out??
             if (auctionItem.getSellerID().equals(user.getUuid())) {
                 return;
@@ -85,6 +120,7 @@ public class AuctionManager {
             if (user.hasEnough(auctionItem.getBuyoutPrice())) {
                 userBid(user, auctionId, auctionItem.getBuyoutPrice());
                 auctionItem.finishAuction(userManager::getUserByID);
+                lastUpdated = Instant.now();
             } else {
                 // todo; send a message saying they don't have enough money;
             }
@@ -138,7 +174,8 @@ public class AuctionManager {
     }
 
     /**
-     * Add a new auction item to the list, checking for existing auctions with the same UUID.
+     * Add a new auction item to the list, checking for existing auctions with the same UUID. If they have the same UUID, call the method again
+     * with another random UUID being generated.
      */
     public void addAuctionItem(List<ItemStack> auctionItems, Instant auctionStarted, long timeLeft, int currentPrice, int buyoutPrice,
                                String seller, UUID sellerID) {
@@ -149,6 +186,15 @@ public class AuctionManager {
         } else {
             addAuctionItem(auctionItems, auctionStarted, timeLeft, currentPrice, buyoutPrice, seller, sellerID);
         }
+        lastUpdated = Instant.now();
+    }
+
+    public Instant getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Instant lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public Collection<AuctionItem> getAuctions() {

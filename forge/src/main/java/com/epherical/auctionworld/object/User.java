@@ -14,12 +14,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 public class User implements DelegatedContainer {
 
     public static final int CURRENCY_SLOT = 0;
+
+    private Instant lastReceivedAuctions;
 
 
     private final UUID uuid;
@@ -48,39 +51,12 @@ public class User implements DelegatedContainer {
         this.lastKnownCurrencyItem = lastKnownCurrencyItem;
     }
 
-    public void setPlayer(ServerPlayer player) {
-        this.player = player;
-    }
 
 
     public void sendPlayerMessageIfOnline(Component component) {
         if (player != null) {
             player.sendSystemMessage(component);
         }
-    }
-
-    public boolean hasEnough(int needed)  {
-        return currencyAmount >= needed;
-    }
-
-    public int getCurrencyAmount() {
-        return currencyAmount;
-    }
-
-    public Item getLastKnownCurrencyItem() {
-        return lastKnownCurrencyItem;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void takeCurrency(int amountToTake) {
-        this.currencyAmount -= amountToTake;
-    }
-
-    public NonNullList<ClaimedItem> getClaimedItems() {
-        return claimedItems;
     }
 
     public void addWinnings(List<ItemStack> itemStacks, ClaimedItem.ClaimType claimType) {
@@ -148,6 +124,8 @@ public class User implements DelegatedContainer {
             nonNullList.add(stack);
         }
     }
+
+
 
     @Override
     public int getContainerSize() {
@@ -262,5 +240,41 @@ public class User implements DelegatedContainer {
             return itemsInserted;
         }
         return 0;
+    }
+
+    public void setPlayer(ServerPlayer player) {
+        this.player = player;
+    }
+
+    public boolean hasEnough(int needed)  {
+        return currencyAmount >= needed;
+    }
+
+    public int getCurrencyAmount() {
+        return currencyAmount;
+    }
+
+    public Item getLastKnownCurrencyItem() {
+        return lastKnownCurrencyItem;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void takeCurrency(int amountToTake) {
+        this.currencyAmount -= amountToTake;
+    }
+
+    public NonNullList<ClaimedItem> getClaimedItems() {
+        return claimedItems;
+    }
+
+    public void setLastReceivedAuctions(Instant lastReceivedAuctions) {
+        this.lastReceivedAuctions = lastReceivedAuctions;
+    }
+
+    public Instant getLastReceivedAuctions() {
+        return lastReceivedAuctions;
     }
 }
