@@ -102,6 +102,8 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
 
     public class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
+        private static final List<Component> COMPONENTS = List.of(Component.translatable("Bidding"));
+
 
         private AuctionItem item;
 
@@ -184,7 +186,7 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
 
                 graphics.pose().translate(0, 0, -532f);
                 graphics.pose().popPose();
-                graphics.renderTooltip(font, List.of(), Optional.of((item)), (int) clickedX, (int) clickedY);
+                graphics.renderTooltip(font, COMPONENTS, Optional.of((item)), (int) clickedX, (int) clickedY);
                 tooltipActive = true;
             } else if (!tooltipActive) {
                 bidButton.setX(-100);

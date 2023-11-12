@@ -8,6 +8,7 @@ import com.epherical.auctionworld.networking.CreateAuctionListing;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -46,9 +47,12 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
         imageHeight = 512;
         super.init();
 
-        createAuction = addRenderableWidget(Button.builder(Component.translatable("Create Auction"), button -> {
+        PlainTextButton plainTextButton = new PlainTextButton(82 + leftPos, 249 + topPos, 80, 20, Component.translatable("Finish Auction"), button -> {
             validateAndSendToServer();
-        }).pos(343 + leftPos, 249 + topPos).width(80).tooltip(Tooltip.create(Component.literal("Don't forget to select the items in your inventory!"))).build());
+        }, font);
+        plainTextButton.setTooltip(Tooltip.create(Component.literal("Don't forget to select the items in your inventory!")));
+
+        createAuction = addRenderableWidget(plainTextButton);
 
         timeSelection = addRenderableWidget(new EditBox(font, 129 + leftPos, 44 + topPos, 100, 20, Component.translatable("Time Selection")));
         timeSelection.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());

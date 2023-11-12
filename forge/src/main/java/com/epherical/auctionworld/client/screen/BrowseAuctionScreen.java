@@ -6,9 +6,16 @@ import com.epherical.auctionworld.client.SortableButton;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
+import com.epherical.auctionworld.networking.SlotManipulation;
+import com.epherical.auctionworld.object.Action;
 import com.epherical.auctionworld.object.AuctionItem;
+import com.epherical.auctionworld.object.User;
+import com.epherical.epherolib.client.Icon;
+import com.epherical.epherolib.client.SmallIconButton;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.PlainTextButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -49,9 +56,28 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         list.setRenderTopAndBottom(false);
         //list.setLeftPos(leftPos);
         addWidget(list);
-        auctionScreenButton = this.addRenderableWidget(Button.builder(Component.translatable("Create Auction"), press -> {
+
+        auctionScreenButton = this.addRenderableWidget(new PlainTextButton(leftPos + 81, 256, 80, 20, Component.translatable("Create Auction"), press -> {
             AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
-        }).width(80).pos(leftPos + 75, 258).build());
+        }, font));
+
+        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert Stack"), var1 -> {
+            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_SLOT));
+        }).pos(leftPos + 351, topPos + 252).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert a stack."))).build());
+        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert as much as possible"), var1 -> {
+            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_ALL));
+        }).pos(leftPos + 351, topPos + 262).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert all available items"))).build());
+
+        // Right orange, remove items
+        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove Stack"), var1 -> {
+            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_STACK));
+        }).pos(leftPos + 380, topPos + 252).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove a stack."))).build());
+        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove as much as possible"), var1 -> {
+            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_ALL));
+        }).pos(leftPos + 380, topPos + 262).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove all available items"))).build());
+
+
+        // 83, 247
 
         time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
                 button -> {

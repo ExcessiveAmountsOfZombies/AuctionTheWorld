@@ -8,8 +8,10 @@ import com.epherical.auctionworld.data.FlatPlayerStorage;
 import com.epherical.auctionworld.data.PlayerStorage;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
+import com.epherical.auctionworld.networking.SlotManipulation;
 import com.epherical.auctionworld.networking.UserSubmitBid;
 import com.epherical.auctionworld.networking.UserSubmitBuyout;
+import com.epherical.auctionworld.object.Action;
 import com.epherical.epherolib.CommonPlatform;
 import com.epherical.epherolib.ForgePlatform;
 import com.epherical.epherolib.networking.ForgeNetworking;
@@ -72,6 +74,10 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         networking.registerClientToServer(id++, UserSubmitBuyout.class, (userSubmitBuyout, friendlyByteBuf) -> {
             friendlyByteBuf.writeUUID(userSubmitBuyout.listing());
         }, friendlyByteBuf -> new UserSubmitBuyout(friendlyByteBuf.readUUID()), UserSubmitBuyout::handle);
+        networking.registerClientToServer(id++, SlotManipulation.class, (slotManipulation, buf) -> {
+            buf.writeVarInt(slotManipulation.slot());
+            buf.writeEnum(slotManipulation.action());
+        }, buf -> new SlotManipulation(buf.readVarInt(), buf.readEnum(Action.class)), SlotManipulation::handle);
 
 
         MinecraftForge.EVENT_BUS.register(this);

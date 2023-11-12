@@ -16,31 +16,28 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
 
 
     public BrowseAuctionMenu(int id, Inventory inventory) {
-        this(id, inventory, new SimpleContainer(11));
+        this(id, inventory, new SimpleContainer(10));
     }
 
     public BrowseAuctionMenu(int id, Inventory inventory, Container container) {
         super(RegisterListener.BROWSE_AUCTION_MENU, id);
 
-        this.addSlot(new Slot(container, 9, 353, 253) {
+        this.addSlot(new Slot(container, User.CURRENCY_SLOT, 362, 253) {
             @Override
             public boolean mayPlace(ItemStack pStack) {
                 return false;
             }
-        });
 
-        this.addSlot(new Slot(container, 10, 371, 253) {
             @Override
-            public boolean mayPlace(ItemStack pStack) {
-                // todo; config option
-                return pStack.is(Items.DIAMOND);
+            public boolean mayPickup(Player p_40228_) {
+                return false;
             }
         });
 
         // 9 slots for auction winnings, expirations, commerce changes
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col){
-                this.addSlot(new Slot(container, col + row * 3, 13 + col * 18, 256 + row * 18) {
+                this.addSlot(new Slot(container, 1 + (col + row * 3), 13 + col * 18, 256 + row * 18) {
                     @Override
                     public boolean mayPlace(ItemStack pStack) {
                         return false;
@@ -58,9 +55,7 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
 
                     @Override
                     public boolean mayPickup(Player pPlayer) {
-                        ItemStack item = this.container.getItem(finalCol + finalRow * 9 + 9);
-                        // todo; config option
-                        return item.is(Items.DIAMOND);
+                        return false;
                     }
                 });
             }
@@ -73,9 +68,7 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
 
                 @Override
                 public boolean mayPickup(Player pPlayer) {
-                    ItemStack item = this.container.getItem(finalRow);
-                    // todo; config option
-                    return item.is(Items.DIAMOND);
+                    return false;
                 }
             });
         }
@@ -83,24 +76,21 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player p_38941_, int slotP) {
+    public ItemStack quickMoveStack(Player player, int slotP) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotP);
         if (slot != null && slot.hasItem()) {
-            ItemStack slotItem = slot.getItem();
-            itemstack = slotItem.copy();
-            if (slot.getContainerSlot() == 9 && slot.container instanceof User user) {
-                user.takeCurrency(slotItem.getMaxStackSize());
-            }
-            if (slotP < 10) {
-                if (!this.moveItemStackTo(slotItem, 10, this.slots.size(), true)) {
+            ItemStack item = slot.getItem();
+            itemstack = item.copy();
+            if (slotP < 9) {
+                if (!this.moveItemStackTo(item, 9, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(slotItem, 0, 10, false)) {
+            } else if (!this.moveItemStackTo(item, 0, 9, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (slotItem.isEmpty()) {
+            if (item.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {
                 slot.setChanged();
