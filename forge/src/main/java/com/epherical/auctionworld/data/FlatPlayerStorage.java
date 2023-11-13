@@ -84,7 +84,9 @@ public class FlatPlayerStorage extends WorldBasedStorage implements PlayerStorag
     @Override
     public void saveAllPlayers(Map<UUID, User> players) {
         for (User value : players.values()) {
-            savePlayer(value);
+            if (value.canBeSaved()) {
+                savePlayer(value);
+            }
         }
     }
 }

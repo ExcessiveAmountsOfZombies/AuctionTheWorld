@@ -37,20 +37,26 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         this.bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
             Entry selected = getSelected();
             if (selected != null) {
+                // todo; crashes when thing is empty
                 AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBid(selected.item.getAuctionID(), Integer.parseInt(bidAmt.getValue())));
             }
         }).width(32).build();
         this.buyoutButton = Button.builder(Component.translatable("Purchase"), pButton -> {
             Entry selected = getSelected();
             if (selected != null) {
-                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBuyout(selected.item.getAuctionID()));
+                try {
+                    AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBuyout(selected.item.getAuctionID()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         }).width(120).build();
     }
 
 
     public void tick() {
-        bidAmt.tick();
+        /*bidAmt.tick();*/
     }
 
     public void addEntries(Collection<AuctionItem> items) {

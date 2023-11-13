@@ -115,11 +115,21 @@ public class AuctionItem implements TooltipComponent {
     }
 
     public int getCurrentBidPrice() {
-        return bidStack.getLast().bidAmount();
+        return bidStack.isEmpty() ? currentPrice : bidStack.getLast().bidAmount();
     }
 
     public void addBid(Bid bid) {
         bidStack.add(bid);
+    }
+
+    public void finishAuctionWithBuyOut(User user) {
+       if (user.hasEnough(buyoutPrice)) {
+           user.takeCurrency(buyoutPrice);
+           user.addWinnings(this.auctionItems, ClaimedItem.ClaimType.WON_LISTING);
+           timeLeft = 0;
+       } else {
+           // todo; user does not have enough to buy out the auction.
+       }
     }
 
     public void finishAuction(Function<UUID, User> userGetter) {

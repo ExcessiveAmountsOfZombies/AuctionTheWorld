@@ -6,6 +6,7 @@ import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import com.epherical.auctionworld.menu.slot.SelectableSlot;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.PlainTextButton;
@@ -27,7 +28,6 @@ public class CreateAuctionScreen extends AbstractContainerScreen<CreateAuctionMe
     //private EditBox bidIncrement;
     private EditBox startingBid;
     private EditBox buyoutPrice;
-
 
 
 

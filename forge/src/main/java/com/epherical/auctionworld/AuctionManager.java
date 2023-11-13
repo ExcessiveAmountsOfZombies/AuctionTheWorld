@@ -8,6 +8,8 @@ import com.epherical.auctionworld.object.User;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
@@ -100,6 +102,7 @@ public class AuctionManager {
     }
 
     public void networkDeserialize(FriendlyByteBuf buf) {
+        auctions.clear();
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             AuctionItem auctionItem = AuctionItem.networkDeserialize(buf);
@@ -118,8 +121,7 @@ public class AuctionManager {
                 return;
             }
             if (user.hasEnough(auctionItem.getBuyoutPrice())) {
-                userBid(user, auctionId, auctionItem.getBuyoutPrice());
-                auctionItem.finishAuction(userManager::getUserByID);
+                auctionItem.finishAuctionWithBuyOut(user);
                 lastUpdated = Instant.now();
             } else {
                 // todo; send a message saying they don't have enough money;

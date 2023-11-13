@@ -3,6 +3,7 @@ package com.epherical.auctionworld.object;
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.util.ClaimedItemUtil;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -22,6 +23,7 @@ public class User implements DelegatedContainer {
 
     public static final int CURRENCY_SLOT = 0;
 
+    private boolean saveData = true;
     private Instant lastReceivedAuctions;
 
 
@@ -74,7 +76,7 @@ public class User implements DelegatedContainer {
         Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(tag.getString("lastKnownItem")));
         int amount = tag.getInt("currencyAmount");
         String name = tag.getString("name");
-        UUID uuid = tag.getUUID("uuid");
+        UUID uuid = tag.getUUID("uuid"); // LMAO if the NILUUID gets saved, this will fail, because sure.
         NonNullList<ClaimedItem> items = NonNullList.create();
         loadAllItems(tag, items);
         return new User(uuid, name, amount, items, item);
@@ -276,5 +278,14 @@ public class User implements DelegatedContainer {
 
     public Instant getLastReceivedAuctions() {
         return lastReceivedAuctions;
+    }
+
+
+    public void setSaveData(boolean saveData) {
+        this.saveData = saveData;
+    }
+
+    public boolean canBeSaved() {
+        return saveData;
     }
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -129,6 +130,10 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         /*browse = this.addRenderableWidget(Button.builder(Component.translatable("Browse"), press -> {
 
         }).width(60).pos(leftPos, 258).build());*/
+    }
+
+    public void reset() {
+        init();
     }
 
     @Override
