@@ -37,6 +37,7 @@ public class ClaimCommand {
                         .then(Commands.argument("claim", IntegerArgumentType.integer(1))
                                 .executes(ClaimCommand::claimItem)))
                 .then(Commands.literal("gen_auctions")
+                        .requires(commandSourceStack -> commandSourceStack.hasPermission(4))
                         .executes(ClaimCommand::generateAuction)));
     }
 

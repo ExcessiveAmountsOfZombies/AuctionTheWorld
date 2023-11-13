@@ -33,13 +33,29 @@ public class User implements DelegatedContainer {
     @Nullable
     private transient ServerPlayer player;
 
+
+    // todos before release:
+    // todo; fix bug: claimed items might be offset when shift clicking, slowly removing available slots.
+    // todo; implement pagination of auction listings
+    // todo; fix bug: that prevents scrolling when the auction house is first opened
+    // todo; implement messages so users know what is happening
+    // todo; implement count of items in a listing
+
+    // todo; implement pagination to claimed items
+    // todo; implement changing of currencies
+    // todo; implement EEP support
+    // todo; implement filters that will interact with the server
+    // todo; implement translation keys for all the text
+    // todo; implement a config
+    // todo; implement currency count so the user can see how much currency they have deposited
+    // todo; implement messages in the UI so they're easier to see
+
     private NonNullList<ClaimedItem> claimedItems;
 
     // We can take this last known currency item, and if the item changes in the config
     // we can withdraw all the deposited currency from the block into some other block for
     // the player to withdraw.
     private Item lastKnownCurrencyItem;
-    // todo; lastKnownCurrencyItem.
 
     public User(UUID uuid, String name, int currency) {
         this(uuid, name, currency, NonNullList.create(), ConfigBasics.CURRENCY);
