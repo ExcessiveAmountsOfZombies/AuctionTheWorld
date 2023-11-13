@@ -39,10 +39,12 @@ public class User implements DelegatedContainer {
 
     // todos before release:
     // todo; fix bug: claimed items might be offset when shift clicking, slowly removing available slots.
-    // todo; implement pagination of auction listings
+    // todo; position pagination buttons
     // todo; fix bug: that prevents scrolling when the auction house is first opened
-    // todo; implement messages so users know what is happening
+
+    // probably done
     // todo; implement count of items in a listing
+    // todo; implement messages so users know what is happening
 
     // todo; implement pagination to claimed items
     // todo; implement changing of currencies

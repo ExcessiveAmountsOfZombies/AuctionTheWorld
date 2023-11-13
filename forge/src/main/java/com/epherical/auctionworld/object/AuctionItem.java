@@ -23,8 +23,9 @@ public class AuctionItem implements TooltipComponent {
     private UUID auctionID;
 
     private List<ItemStack> auctionItems;
+    private transient int countOfItems;
     private Instant auctionStarted;
-    private long timeLeft; // todo; use a timeLeft system, so when the auction is saved, it doesn't become invalid if the server goes down for an extended period of time.
+    private long timeLeft;
     private int currentPrice;
     private final int buyoutPrice;
     private String seller;
@@ -54,6 +55,14 @@ public class AuctionItem implements TooltipComponent {
 
     public void setAuctionItems(List<ItemStack> auctionItems) {
         this.auctionItems = auctionItems;
+    }
+
+    public int getCountOfItems() {
+        return countOfItems = auctionItems.stream().mapToInt(ItemStack::getCount).sum();
+    }
+
+    public void setCountOfItems(int countOfItems) {
+        this.countOfItems = countOfItems;
     }
 
     public boolean isExpired() {
@@ -128,7 +137,7 @@ public class AuctionItem implements TooltipComponent {
            user.addWinnings(this.auctionItems, ClaimedItem.ClaimType.WON_LISTING);
            timeLeft = 0;
        } else {
-           // todo; user does not have enough to buy out the auction.
+           user.sendPlayerMessageIfOnline(Component.translatable("You do not have enough money for this auction"));
        }
     }
 
@@ -136,8 +145,7 @@ public class AuctionItem implements TooltipComponent {
         if (bidStack.isEmpty()) {
             User owner = userGetter.apply(this.sellerID);
             owner.addWinnings(this.auctionItems, ClaimedItem.ClaimType.EXPIRED_LISTING);
-            owner.sendPlayerMessageIfOnline(Component.literal("No one bid on your listing, so it has been returned to you."));
-            // todo; send better message.
+            owner.sendPlayerMessageIfOnline(Component.translatable("No one bid on your listing, so it has been returned to you."));
             return;
         }
 
@@ -150,6 +158,8 @@ public class AuctionItem implements TooltipComponent {
                 user.addWinnings(this.auctionItems, ClaimedItem.ClaimType.WON_LISTING);
                 return;
             } else {
+                user.sendPlayerMessageIfOnline(Component.translatable("You previously bid on an ending auction and did not have enough money." +
+                        " It is going to the next highest bidder."));
                 // todo; decide if we want to punish the user for trying to game the system in submit fraudulent bids
             }
         }
@@ -252,9 +262,13 @@ public class AuctionItem implements TooltipComponent {
         buf.writeInt(getCurrentBidPrice());
         buf.writeInt(buyoutPrice);
         buf.writeUtf(seller);
+        buf.writeInt(getCountOfItems());
     }
 
     public static AuctionItem networkDeserialize(FriendlyByteBuf buf) {
-        return new AuctionItem(buf.readUUID(), List.of(buf.readItem()), null, buf.readLong(), buf.readInt(), buf.readInt(), buf.readUtf(), null, new ArrayDeque<>());
+        AuctionItem auctionItem = new AuctionItem(buf.readUUID(), List.of(buf.readItem()), null, buf.readLong(), buf.readInt(), buf.readInt(), buf.readUtf(), null, new ArrayDeque<>());
+        auctionItem.setCountOfItems(buf.readInt());
+        auctionItem.auctionItems.get(0).setCount(auctionItem.getCountOfItems());
+        return auctionItem;
     }
 }

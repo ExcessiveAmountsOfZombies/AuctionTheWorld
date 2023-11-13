@@ -118,18 +118,19 @@ public class AuctionManager {
     public void userBuyOut(User user, UUID auctionId) {
         AuctionItem auctionItem = getAuctionItem(auctionId);
         if (auctionItem != null) {
-            // todo; abstract it out??
             if (auctionItem.getSellerID().equals(user.getUuid())) {
+                user.sendPlayerMessageIfOnline(Component.translatable("You can not bid on your own auction"));
                 return;
             }
             if (auctionItem.isExpired()) {
+                user.sendPlayerMessageIfOnline(Component.translatable("This auction has already expired"));
                 return;
             }
             if (user.hasEnough(auctionItem.getBuyoutPrice())) {
                 auctionItem.finishAuctionWithBuyOut(user);
                 lastUpdated = Instant.now();
             } else {
-                // todo; send a message saying they don't have enough money;
+                user.sendPlayerMessageIfOnline(Component.translatable("You do not have enough currency for this bid"));;
             }
         }
     }
@@ -142,21 +143,18 @@ public class AuctionManager {
         AuctionItem auctionItem = getAuctionItem(auctionId);
         if (auctionItem != null) {
             if (auctionItem.getSellerID().equals(user.getUuid())) {
-                System.out.println("User bid on own");
-                return; // todo; user can't bid on their own item. send a message
+                user.sendPlayerMessageIfOnline(Component.translatable("You can not bid on your auction listing."));
+                return;
             }
             if (auctionItem.isExpired()) {
-                System.out.println("expired");
-                // todo; check if auction has expired
+                user.sendPlayerMessageIfOnline(Component.translatable("This auction listing has already expired."));
                 return;
             }
             if (bidAmount <= auctionItem.getCurrentBidPrice()) {
-                System.out.println("Bid is too low");
-                // todo; this bid cannot happen.
+                user.sendPlayerMessageIfOnline(Component.translatable("You did not bid enough money on the auction listing."));
                 return;
             }
 
-            System.out.println("Bidding nowwww");
 
             Bid bid = new Bid(user.getUuid(), bidAmount);
 

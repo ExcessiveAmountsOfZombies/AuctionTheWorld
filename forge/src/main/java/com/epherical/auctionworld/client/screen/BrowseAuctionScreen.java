@@ -132,7 +132,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
 
         AbstractNetworking<?, ?> networking = AuctionTheWorldForge.getInstance().getNetworking();
-        // toDO; create buttons that will add/subtract pages
+        // todo; position buttons for making pages
         this.addRenderableWidget(Button.builder(Component.literal("next page: "), p_93751_ -> {
             page = new Page(page.getPage() + 1, 10);
             networking.sendToServer(new C2SPageChange(page.getPage()));

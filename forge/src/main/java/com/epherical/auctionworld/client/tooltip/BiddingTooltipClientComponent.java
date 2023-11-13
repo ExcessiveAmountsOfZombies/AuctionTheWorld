@@ -32,7 +32,7 @@ public class BiddingTooltipClientComponent implements ClientTooltipComponent {
     @Override
     public void renderText(Font pFont, int pMouseX, int pMouseY, Matrix4f pMatrix, MultiBufferSource.BufferSource pBufferSource) {
         ClientTooltipComponent.super.renderText(pFont, pMouseX, pMouseY, pMatrix, pBufferSource);
-        List<FormattedCharSequence> split = pFont.split(Component.translatable("Send a bid, or outright purchase the item for %s", item.getBuyoutPrice()), 120);
+        List<FormattedCharSequence> split = pFont.split(Component.translatable("There are %s items in this auction. Send a bid, or outright purchase the item for %s.", item.getCountOfItems(), item.getBuyoutPrice()), 120);
         for (int i = 0; i < split.size(); i++) {
             pFont.drawInBatch(split.get(i), (float) pMouseX, (float) (pMouseY + (i * 9)), -1, true, pMatrix, pBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
         }
