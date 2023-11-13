@@ -137,17 +137,21 @@ public class AuctionManager {
         AuctionItem auctionItem = getAuctionItem(auctionId);
         if (auctionItem != null) {
             if (auctionItem.getSellerID().equals(user.getUuid())) {
+                System.out.println("User bid on own");
                 return; // todo; user can't bid on their own item. send a message
             }
             if (auctionItem.isExpired()) {
+                System.out.println("expired");
                 // todo; check if auction has expired
                 return;
             }
             if (bidAmount <= auctionItem.getCurrentBidPrice()) {
+                System.out.println("Bid is too low");
                 // todo; this bid cannot happen.
                 return;
             }
 
+            System.out.println("Bidding nowwww");
 
             Bid bid = new Bid(user.getUuid(), bidAmount);
 
@@ -161,6 +165,7 @@ public class AuctionManager {
             }
             auctionItem.addBid(bid);
             auctionItem.addTime(ConfigBasics.addTimeAfterBid > -1 ? ConfigBasics.addTimeAfterBid : 0);
+            lastUpdated = Instant.now();
         }
     }
 

@@ -37,10 +37,15 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         this.bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
             Entry selected = getSelected();
             if (selected != null) {
-                // todo; crashes when thing is empty
-                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBid(selected.item.getAuctionID(), Integer.parseInt(bidAmt.getValue())));
+                int bid = 0;
+                try {
+                    bid = Integer.parseInt(bidAmt.getValue());
+                } catch (NumberFormatException ignored) {
+                }
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new UserSubmitBid(selected.item.getAuctionID(), bid));
             }
         }).width(32).build();
+        bidAmt.setFilter(s -> s.matches("[0-9]+") || s.isEmpty());
         this.buyoutButton = Button.builder(Component.translatable("Purchase"), pButton -> {
             Entry selected = getSelected();
             if (selected != null) {

@@ -249,7 +249,7 @@ public class AuctionItem implements TooltipComponent {
         buf.writeUUID(auctionID);
         buf.writeItem(auctionItems.get(0));
         buf.writeLong(timeLeft);
-        buf.writeInt(currentPrice);
+        buf.writeInt(getCurrentBidPrice());
         buf.writeInt(buyoutPrice);
         buf.writeUtf(seller);
     }
