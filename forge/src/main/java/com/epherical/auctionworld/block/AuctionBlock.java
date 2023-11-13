@@ -4,6 +4,7 @@ import com.epherical.auctionworld.AuctionManager;
 import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.networking.S2CSendAuctionListings;
+import com.epherical.auctionworld.object.Page;
 import com.epherical.auctionworld.object.User;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -48,9 +49,11 @@ public class AuctionBlock extends Block {
             User user = instance.getUserManager().getUserByID(player.getUUID());
             if (user.getLastReceivedAuctions() == null || user.getLastReceivedAuctions().isBefore(manager.getLastUpdated())) {
                 // todo; this will cause problems in singleplayer
-                instance.getNetworking().sendToClient(new S2CSendAuctionListings(), (ServerPlayer) player);
+
+                instance.getNetworking().sendToClient(new S2CSendAuctionListings(manager.getAuctionItemsByPage(user.getCurrentPage())), (ServerPlayer) player);
                 user.setLastReceivedAuctions(Instant.now());
             }
+            user.setCurrentPage(new Page(1, 10));
             return new BrowseAuctionMenu(id, inventory, user);
         }, CONTAINER_TITLE);
     }

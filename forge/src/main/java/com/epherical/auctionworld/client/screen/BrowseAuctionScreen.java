@@ -7,13 +7,16 @@ import com.epherical.auctionworld.data.AuctionFilterManager;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.listener.TagListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
+import com.epherical.auctionworld.networking.C2SPageChange;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.auctionworld.networking.SlotManipulation;
 import com.epherical.auctionworld.object.Action;
 import com.epherical.auctionworld.object.AuctionItem;
+import com.epherical.auctionworld.object.Page;
 import com.epherical.auctionworld.object.User;
 import com.epherical.epherolib.client.Icon;
 import com.epherical.epherolib.client.SmallIconButton;
+import com.epherical.epherolib.networking.AbstractNetworking;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlainTextButton;
@@ -34,6 +37,8 @@ import java.util.function.Function;
 public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
 
+
+    private Page page = new Page(1, 10);
 
     private Button auctionScreenButton;
     //private Button browse;
@@ -124,6 +129,18 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
                 .pos(leftPos + 442, topPos + 26).width(67)
                 .build()));
         this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
+
+
+        AbstractNetworking<?, ?> networking = AuctionTheWorldForge.getInstance().getNetworking();
+        // toDO; create buttons that will add/subtract pages
+        this.addRenderableWidget(Button.builder(Component.literal("next page: "), p_93751_ -> {
+            page = new Page(page.getPage() + 1, 10);
+            networking.sendToServer(new C2SPageChange(page.getPage()));
+        }).build());
+        this.addRenderableWidget(Button.builder(Component.literal("prev page: "), p_93751_ -> {
+            page = new Page(page.getPage() - 1, 10);
+            networking.sendToServer(new C2SPageChange(page.getPage()));
+        }).build());
 
 
 

@@ -23,6 +23,9 @@ public class User implements DelegatedContainer {
 
     public static final int CURRENCY_SLOT = 0;
 
+
+    private Page currentPage = new Page(1, 10);
+
     private boolean saveData = true;
     private Instant lastReceivedAuctions;
 
@@ -258,6 +261,14 @@ public class User implements DelegatedContainer {
             return itemsInserted;
         }
         return 0;
+    }
+
+    public void setCurrentPage(Page currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public Page getCurrentPage() {
+        return currentPage;
     }
 
     public void setPlayer(ServerPlayer player) {

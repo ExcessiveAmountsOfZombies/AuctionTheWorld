@@ -7,6 +7,7 @@ import com.epherical.auctionworld.data.AuctionStorage;
 import com.epherical.auctionworld.data.FlatAuctionStorage;
 import com.epherical.auctionworld.data.FlatPlayerStorage;
 import com.epherical.auctionworld.data.PlayerStorage;
+import com.epherical.auctionworld.networking.C2SPageChange;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
 import com.epherical.auctionworld.networking.S2CSendAuctionListings;
@@ -14,6 +15,7 @@ import com.epherical.auctionworld.networking.SlotManipulation;
 import com.epherical.auctionworld.networking.UserSubmitBid;
 import com.epherical.auctionworld.networking.UserSubmitBuyout;
 import com.epherical.auctionworld.object.Action;
+import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.epherolib.CommonPlatform;
 import com.epherical.epherolib.ForgePlatform;
 import com.epherical.epherolib.networking.ForgeNetworking;
@@ -35,6 +37,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.List;
 
 @Mod(Constants.MOD_ID)
 public class AuctionTheWorldForge extends AuctionTheWorld {
@@ -81,12 +85,16 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
             buf.writeEnum(slotManipulation.action());
         }, buf -> new SlotManipulation(buf.readVarInt(), buf.readEnum(Action.class)), SlotManipulation::handle);
         networking.registerServerToClient(id++, S2CSendAuctionListings.class, (s2CSendAuctionListings, friendlyByteBuf) -> {
-            auctionManager.networkSerializeAuctions(friendlyByteBuf);
+            auctionManager.networkSerializeAuctions(friendlyByteBuf, s2CSendAuctionListings);
         }, friendlyByteBuf -> {
             // bad way to do this... but w/e
-            auctionManager.networkDeserialize(friendlyByteBuf);
-            return new S2CSendAuctionListings();
+            List<AuctionItem> auctionItems = auctionManager.networkDeserialize(friendlyByteBuf);
+            return new S2CSendAuctionListings(auctionItems);
         }, S2CSendAuctionListings::handle);
+        networking.registerClientToServer(id++, C2SPageChange.class,
+                (c2SPageChange, buf) -> buf.writeInt(c2SPageChange.newPage()),
+                buf -> new C2SPageChange(buf.readInt()),
+                C2SPageChange::handle);
 
 
         MinecraftForge.EVENT_BUS.register(this);

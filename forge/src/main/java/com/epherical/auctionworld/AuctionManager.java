@@ -2,21 +2,20 @@ package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.data.AuctionStorage;
+import com.epherical.auctionworld.networking.S2CSendAuctionListings;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
+import com.epherical.auctionworld.object.Page;
 import com.epherical.auctionworld.object.User;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerGamePacketListener;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +37,7 @@ public class AuctionManager {
     private AuctionStorage storage;
     private UserManager userManager;
     private Map<UUID, AuctionItem> auctions;
+    private List<AuctionItem> auctionList;
 
     private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> future;
@@ -46,6 +46,7 @@ public class AuctionManager {
     public AuctionManager(AuctionStorage storage, boolean client, UserManager userManager) {
         this.storage = storage;
         this.userManager = userManager;
+        this.auctionList =new ArrayList<>();
         if (client) {
             this.auctions = new HashMap<>();
             future = service.scheduleAtFixedRate(() -> {
@@ -56,6 +57,7 @@ public class AuctionManager {
                         auction.decrementTime();
                         if (auction.isExpired()) {
                             expiredAuctions.add(entry.getKey());
+                            auctionList.remove(entry.getValue());
                         }
                     }
                     for (UUID expiredAuction : expiredAuctions) {
@@ -77,6 +79,7 @@ public class AuctionManager {
                         if (auction.isExpired()) {
                             auction.finishAuction(this.userManager::getUserByID);
                             expiredAuctions.add(entry.getKey());
+                            auctionList.remove(entry.getValue());
                         }
                     }
                     for (UUID expiredAuction : expiredAuctions) {
@@ -94,20 +97,22 @@ public class AuctionManager {
         }
     }
 
-    public void networkSerializeAuctions(FriendlyByteBuf byteBuf) {
-        byteBuf.writeInt(auctions.size());
-        for (AuctionItem value : auctions.values()) {
-            value.networkSerialize(byteBuf);
-        }
+    public void networkSerializeAuctions(FriendlyByteBuf byteBuf, S2CSendAuctionListings listings) {
+        byteBuf.writeInt(listings.items().size());
+        listings.items().forEach(item -> item.networkSerialize(byteBuf));
     }
 
-    public void networkDeserialize(FriendlyByteBuf buf) {
+    // This method is called on the client.
+    public List<AuctionItem> networkDeserialize(FriendlyByteBuf buf) {
         auctions.clear();
+        auctionList.clear();
         int size = buf.readInt();
         for (int i = 0; i < size; i++) {
             AuctionItem auctionItem = AuctionItem.networkDeserialize(buf);
             auctions.put(auctionItem.getAuctionID(), auctionItem);
+            auctionList.add(auctionItem);
         }
+        return auctionList;
     }
 
     public void userBuyOut(User user, UUID auctionId) {
@@ -204,7 +209,12 @@ public class AuctionManager {
         this.lastUpdated = lastUpdated;
     }
 
-    public Collection<AuctionItem> getAuctions() {
-        return auctions.values();
+    public List<AuctionItem> getAuctions() {
+        return auctionList;
+    }
+
+    public List<AuctionItem> getAuctionItemsByPage(Page currentPage) {
+        List<AuctionItem> pagedAuctionItems = auctionList.subList(currentPage.getPageOffset(),
+                Math.min(currentPage.getPagedItems(), auctions.size()));
     }
 }
