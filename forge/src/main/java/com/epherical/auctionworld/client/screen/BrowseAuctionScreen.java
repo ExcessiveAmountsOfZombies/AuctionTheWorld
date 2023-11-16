@@ -3,9 +3,7 @@ package com.epherical.auctionworld.client.screen;
 import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.client.AuctionListWidget;
 import com.epherical.auctionworld.client.SortableButton;
-import com.epherical.auctionworld.data.AuctionFilterManager;
 import com.epherical.auctionworld.listener.RegisterListener;
-import com.epherical.auctionworld.listener.TagListener;
 import com.epherical.auctionworld.menu.BrowseAuctionMenu;
 import com.epherical.auctionworld.networking.C2SPageChange;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
@@ -21,18 +19,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlainTextButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
@@ -150,7 +142,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     }
 
     public void reset() {
-        init();
+        minecraft.setScreen(this);
     }
 
     @Override
@@ -177,8 +169,8 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     @Override
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
         // todo; filtering function
-       // AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
-       // tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
+        // AuctionFilterManager.Node<Item> tree = TagListener.manager.getTree();
+        // tree.beginRenderText(graphics, this.font, this.titleLabelX, this.titleLabelY, 1);
         /*seller.sort(auctionItems);
         bid.sort(auctionItems);
         item.sort(auctionItems);

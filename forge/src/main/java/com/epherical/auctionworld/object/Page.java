@@ -20,11 +20,11 @@ public class Page {
     }
 
     public int getPageOffset() {
-        return page * pageSize;
+        return (page - 1) * pageSize;
     }
 
     public int getPagedItems() {
-        return (page* pageSize) + pageSize;
+        return (page* pageSize);
     }
 
 

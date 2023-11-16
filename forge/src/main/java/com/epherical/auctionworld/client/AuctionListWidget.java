@@ -61,7 +61,7 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
 
 
     public void tick() {
-        /*bidAmt.tick();*/
+        bidAmt.tick();
     }
 
     public void addEntries(Collection<AuctionItem> items) {

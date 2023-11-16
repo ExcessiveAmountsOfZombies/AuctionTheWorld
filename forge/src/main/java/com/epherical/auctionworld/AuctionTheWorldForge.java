@@ -129,6 +129,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         MinecraftServer server = event.getLevel().getServer();
         ServerLevel overWorld = server.overworld();
         if (overWorld.equals(event.getLevel())) {
+
             auctionManager.saveAuctionItems();
             userManager.saveAllPlayers();
         }
@@ -138,6 +139,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
         auctionManager.stop();
+        // todo; causes NPE when the server is shutting down.
         auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
     }
 

@@ -38,9 +38,7 @@ public class User implements DelegatedContainer {
 
 
     // todos before release:
-    // todo; fix bug: claimed items might be offset when shift clicking, slowly removing available slots.
     // todo; position pagination buttons
-    // todo; fix bug: that prevents scrolling when the auction house is first opened
 
     // probably done
     // todo; implement count of items in a listing
@@ -170,6 +168,10 @@ public class User implements DelegatedContainer {
         }
 
         if (pSlot < claimedItems.size()) {
+            if (claimedItems.get(pSlot).itemStack().isEmpty()) {
+                claimedItems.remove(pSlot);
+                return ItemStack.EMPTY;
+            }
             return claimedItems.get(pSlot).itemStack();
         } else {
             return ItemStack.EMPTY;

@@ -85,7 +85,9 @@ public class AuctionManager {
                     for (UUID expiredAuction : expiredAuctions) {
                         auctions.remove(expiredAuction);
                     }
-
+                    if (!expiredAuctions.isEmpty()) {
+                        // event
+                    }
                 }
             }, 1L, 1L, TimeUnit.SECONDS);
         }
@@ -193,6 +195,7 @@ public class AuctionManager {
         if (!auctions.containsKey(uuid)) {
             AuctionItem item = new AuctionItem(uuid, auctionItems, auctionStarted, timeLeft, currentPrice, buyoutPrice, seller, sellerID, new ArrayDeque<>());
             auctions.put(uuid, item);
+            auctionList.add(item);
         } else {
             addAuctionItem(auctionItems, auctionStarted, timeLeft, currentPrice, buyoutPrice, seller, sellerID);
         }
@@ -214,5 +217,6 @@ public class AuctionManager {
     public List<AuctionItem> getAuctionItemsByPage(Page currentPage) {
         List<AuctionItem> pagedAuctionItems = auctionList.subList(currentPage.getPageOffset(),
                 Math.min(currentPage.getPagedItems(), auctions.size()));
+        return pagedAuctionItems;
     }
 }

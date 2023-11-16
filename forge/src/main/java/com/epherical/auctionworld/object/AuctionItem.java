@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.object;
 
+import com.epherical.auctionworld.util.UUIDUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -186,7 +187,7 @@ public class AuctionItem implements TooltipComponent {
                     auction.getInt("currentPrice"),
                     auction.getInt("buyoutPrice"),
                     auction.getString("seller"),
-                    auction.getUUID("sellerId"),
+                    UUIDUtils.loadUUID(auction.get("sellerId")),
                     bids);
             auctionItems.put(auctionItem.getAuctionID(), auctionItem);
         }
