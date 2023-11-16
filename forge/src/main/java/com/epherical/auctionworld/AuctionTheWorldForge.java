@@ -38,6 +38,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod(Constants.MOD_ID)
@@ -52,6 +53,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     private AuctionManager auctionManager;
     private UserManager userManager;
 
+    public static List<Runnable> auctionListeners = new ArrayList<>();
 
     public AuctionTheWorldForge() {
         super(new ForgeNetworking(MOD_CHANNEL, "1", s -> true, s -> true));

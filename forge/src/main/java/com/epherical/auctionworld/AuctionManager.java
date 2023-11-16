@@ -63,6 +63,11 @@ public class AuctionManager {
                     for (UUID expiredAuction : expiredAuctions) {
                         auctions.remove(expiredAuction);
                     }
+                    if (!expiredAuctions.isEmpty()) {
+                        for (Runnable auctionListener : AuctionTheWorldForge.auctionListeners) {
+                            auctionListener.run();
+                        }
+                    }
 
                 }
             }, 1L, 1L, TimeUnit.SECONDS);
@@ -85,9 +90,7 @@ public class AuctionManager {
                     for (UUID expiredAuction : expiredAuctions) {
                         auctions.remove(expiredAuction);
                     }
-                    if (!expiredAuctions.isEmpty()) {
-                        // event
-                    }
+
                 }
             }, 1L, 1L, TimeUnit.SECONDS);
         }

@@ -1,10 +1,12 @@
 package com.epherical.auctionworld.client;
 
+import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.client.screen.BrowseAuctionScreen;
 import com.epherical.auctionworld.client.screen.CreateAuctionScreen;
 import com.epherical.auctionworld.client.tooltip.BiddingTooltipClientComponent;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.object.AuctionItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -21,7 +23,14 @@ public class AModClient {
         MenuScreens.register(RegisterListener.BROWSE_AUCTION_MENU, BrowseAuctionScreen::new);
         MenuScreens.register(RegisterListener.CREATE_AUCTION_MENU, CreateAuctionScreen::new);
 
-
+        AuctionTheWorldForge.auctionListeners.add(() -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            minecraft.execute(() -> {
+                if (minecraft.screen instanceof BrowseAuctionScreen screen) {
+                    minecraft.setScreen(screen);
+                }
+            });
+        });
     }
 
     public static void tooltipRegister(RegisterClientTooltipComponentFactoriesEvent event) {
