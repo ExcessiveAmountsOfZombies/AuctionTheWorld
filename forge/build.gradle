@@ -27,8 +27,8 @@ configurations {
 }
 
 mixin {
-    /*add sourceSets.main, "${project.modId}.refmap.json"
-    config "${project.modId}.mixins.json"*/
+    add sourceSets.main, "AuctionTheWorld-refmap.json"
+    config "${project.modId}.mixins.json"
 }
 
 sourceSets {
@@ -65,7 +65,7 @@ minecraft {
         client {
             workingDirectory project.file('run')
             property 'legacyClassPath', '{minecraft_classpath}'
-            //arg "-mixin.config=bozoiD.mixins.json"
+            arg "-mixin.config=auction_the_world.mixins.json"
             // Recommended logging data for a userdev environment
             //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             // Recommended logging level for the console //property 'forge.logging.console.level', 'debug'
@@ -80,7 +80,8 @@ minecraft {
         server {
             workingDirectory project.file('run')
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            //property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            arg "-mixin.config=auction_the_world.mixins.json"
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
             mods {

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.epherical.auctionworld.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "AuctionTheWorld-refmap.json",
+  "mixins": [
+    "FriendlyByteBufItemStackSizeMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
