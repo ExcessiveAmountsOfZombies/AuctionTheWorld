@@ -218,8 +218,13 @@ public class AuctionManager {
     }
 
     public List<AuctionItem> getAuctionItemsByPage(Page currentPage) {
-        List<AuctionItem> pagedAuctionItems = auctionList.subList(currentPage.getPageOffset(),
-                Math.min(currentPage.getPagedItems(), auctions.size()));
-        return pagedAuctionItems;
+        if (currentPage.getPageOffset() > auctionList.size()) {
+            return List.of();
+        }
+        return auctionList.subList(currentPage.getPageOffset(), Math.min(currentPage.getPagedItems(), auctions.size()));
+    }
+
+    public int getMaxPages(Page page) {
+        return auctionList.isEmpty() ? 1 : page.getMaxPages(auctionList.size());
     }
 }

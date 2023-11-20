@@ -15,6 +15,7 @@ import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEv
 @OnlyIn(Dist.CLIENT)
 public class AModClient {
 
+    public static int maxPages = 100;
     private static CommonClient commonClient;
 
     public static void initClient() {

@@ -88,10 +88,12 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         }, buf -> new SlotManipulation(buf.readVarInt(), buf.readEnum(Action.class)), SlotManipulation::handle);
         networking.registerServerToClient(id++, S2CSendAuctionListings.class, (s2CSendAuctionListings, friendlyByteBuf) -> {
             auctionManager.networkSerializeAuctions(friendlyByteBuf, s2CSendAuctionListings);
+            friendlyByteBuf.writeInt(s2CSendAuctionListings.maxPages());
         }, friendlyByteBuf -> {
             // bad way to do this... but w/e
             List<AuctionItem> auctionItems = auctionManager.networkDeserialize(friendlyByteBuf);
-            return new S2CSendAuctionListings(auctionItems);
+            int maxPages = friendlyByteBuf.readInt();
+            return new S2CSendAuctionListings(auctionItems, maxPages);
         }, S2CSendAuctionListings::handle);
         networking.registerClientToServer(id++, C2SPageChange.class,
                 (c2SPageChange, buf) -> buf.writeInt(c2SPageChange.newPage()),

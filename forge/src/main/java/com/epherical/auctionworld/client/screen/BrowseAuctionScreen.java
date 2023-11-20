@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.client.screen;
 
 import com.epherical.auctionworld.AuctionTheWorldForge;
+import com.epherical.auctionworld.client.AModClient;
 import com.epherical.auctionworld.client.AuctionListWidget;
 import com.epherical.auctionworld.client.SortableButton;
 import com.epherical.auctionworld.listener.RegisterListener;
@@ -126,13 +127,21 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         AbstractNetworking<?, ?> networking = AuctionTheWorldForge.getInstance().getNetworking();
         // todo; position buttons for making pages
         this.addRenderableWidget(Button.builder(Component.literal("next page: "), p_93751_ -> {
-            page = new Page(page.getPage() + 1, 10);
+            int newPage = page.getPage() + 1;
+            if (newPage > AModClient.maxPages) {
+                newPage = AModClient.maxPages;
+            }
+            page = new Page(newPage, 10);
             networking.sendToServer(new C2SPageChange(page.getPage()));
-        }).build());
+        }).pos(0, 20).build());
         this.addRenderableWidget(Button.builder(Component.literal("prev page: "), p_93751_ -> {
-            page = new Page(page.getPage() - 1, 10);
+            int newPage = page.getPage() - 1;
+            if (newPage <= 0 || newPage > AModClient.maxPages) {
+                newPage = Math.min(AModClient.maxPages, 1);
+            }
+            page = new Page(newPage, 10);
             networking.sendToServer(new C2SPageChange(page.getPage()));
-        }).build());
+        }).pos(0,40).build());
 
 
 

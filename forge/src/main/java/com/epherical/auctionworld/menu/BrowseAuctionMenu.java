@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.menu;
 
+import com.epherical.auctionworld.container.DenseSimpleContainer;
 import com.epherical.auctionworld.listener.RegisterListener;
 import com.epherical.auctionworld.object.User;
 import net.minecraft.world.Container;
@@ -18,7 +19,7 @@ public class BrowseAuctionMenu extends AbstractContainerMenu {
 
 
     public BrowseAuctionMenu(int id, Inventory inventory) {
-        this(id, inventory, new SimpleContainer(10));
+        this(id, inventory, new DenseSimpleContainer(10));
     }
 
     public BrowseAuctionMenu(int id, Inventory inventory, Container container) {

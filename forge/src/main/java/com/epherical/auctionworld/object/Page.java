@@ -27,5 +27,9 @@ public class Page {
         return (page* pageSize);
     }
 
+    public int getMaxPages(int divideBy) {
+        return (int) Math.ceil((double) pageSize / divideBy); //silly
+    }
+
 
 }

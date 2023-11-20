@@ -15,23 +15,19 @@ public abstract class FriendlyByteBufItemStackSizeMixin {
 
     @Shadow public abstract short readShort();
 
-    @Redirect(method = "writeItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeByte(I)Lio/netty/buffer/ByteBuf;"))
+    @Redirect(remap = false, method = "writeItemStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeByte(I)Lio/netty/buffer/ByteBuf;"))
     public ByteBuf auctionTheWorld$changeByteToShort(FriendlyByteBuf instance, int count) {
-        System.out.println("writin");
         instance.writeShort(count);
         return instance;
     }
 
-    @Redirect(method = "readItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;readByte()B"))
+    @Redirect(remap = false, method = "readItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;readByte()B"))
     public byte auctionTheWorld$ignoreByteRead(FriendlyByteBuf instance) {
-        System.out.println("mixxxxinn");
         return 0;
-        // todo; implement mixin when we get back.
     }
 
-    @Redirect(method = "readItem", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/item/ItemStack;<init>(Lnet/minecraft/world/level/ItemLike;I)V"))
-    public void auctionTheWorld$readShortInsteadOfByte(ItemStack instance, ItemLike item, int oldInt) {
-        System.out.println("misin workin");
-        instance.setCount(this.readShort());
+    @Redirect(method = "readItem", at = @At(value = "NEW", target = "(Lnet/minecraft/world/level/ItemLike;I)Lnet/minecraft/world/item/ItemStack;"))
+    public ItemStack auctionTheWorld$readShortInsteadOfByte(ItemLike item, int oldCount) {
+        return new ItemStack(item, readShort());
     }
 }

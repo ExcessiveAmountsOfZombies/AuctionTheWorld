@@ -39,7 +39,8 @@ public class User implements DelegatedContainer {
 
 
     // todos before release:
-    // todo; position pagination buttons
+    // todo; fix pagination buttons giving errors on the server
+    // todo; fix AuctionManager causing NPE on shutdown
 
     // probably done
     // todo; implement count of items in a listing
@@ -51,7 +52,6 @@ public class User implements DelegatedContainer {
     // todo; implement filters that will interact with the server
     // todo; implement translation keys for all the text
     // todo; implement a config
-    // todo; implement currency count so the user can see how much currency they have deposited
     // todo; implement messages in the UI so they're easier to see
 
     private NonNullList<ClaimedItem> claimedItems;

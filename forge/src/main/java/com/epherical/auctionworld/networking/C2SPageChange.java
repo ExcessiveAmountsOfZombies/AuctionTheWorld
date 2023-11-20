@@ -1,5 +1,6 @@
 package com.epherical.auctionworld.networking;
 
+import com.epherical.auctionworld.AuctionManager;
 import com.epherical.auctionworld.AuctionTheWorldForge;
 import com.epherical.auctionworld.object.Page;
 import com.epherical.auctionworld.object.User;
@@ -12,9 +13,18 @@ public record C2SPageChange(int newPage) {
         ServerPlayer player = context.getPlayer();
         player.getServer().execute(() -> {
             AuctionTheWorldForge mod = AuctionTheWorldForge.getInstance();
-            User userByID = mod.getUserManager().getUserByID(player.getUUID());
-            userByID.setCurrentPage(new Page(listing.newPage, 10));
-            mod.getNetworking().sendToClient(new S2CSendAuctionListings(mod.getAuctionManager().getAuctionItemsByPage(userByID.getCurrentPage())), player);
+            User user = mod.getUserManager().getUserByID(player.getUUID());
+            int page = listing.newPage;
+            if (listing.newPage <= 0) {
+                page = 1;
+            }
+            AuctionManager aucManager = mod.getAuctionManager();
+            user.setCurrentPage(new Page(page, 10));
+            mod.getNetworking().sendToClient(
+                    new S2CSendAuctionListings(
+                            aucManager.getAuctionItemsByPage(user.getCurrentPage()),
+                            aucManager.getMaxPages(user.getCurrentPage())
+                    ), player);
         });
     }
 
