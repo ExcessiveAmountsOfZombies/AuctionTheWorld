@@ -46,6 +46,8 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     private static final ResourceLocation MOD_CHANNEL = new ResourceLocation(Constants.MOD_ID, "packets");
 
+    public static boolean client = false;
+
     private static AuctionTheWorldForge mod;
 
     private AuctionStorage auctionStorage;
@@ -112,6 +114,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     private void clientInit(FMLClientSetupEvent event) {
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> {
+            client = true;
             // todo; ... usermanager null here might be a problem?
             auctionManager = new AuctionManager(null, true, null);
             return AModClient::initClient;
@@ -133,7 +136,6 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         MinecraftServer server = event.getLevel().getServer();
         ServerLevel overWorld = server.overworld();
         if (overWorld.equals(event.getLevel())) {
-
             auctionManager.saveAuctionItems();
             userManager.saveAllPlayers();
         }
@@ -143,8 +145,10 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
         auctionManager.stop();
-        // todo; causes NPE when the server is shutting down.
-        auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
+        if (client) {
+            // todo; causes NPE when the server is shutting down.
+            auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
+        }
     }
 
     @SubscribeEvent
