@@ -6,7 +6,14 @@ import com.epherical.auctionworld.menu.CreateAuctionMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -27,7 +34,10 @@ public class RegisterListener {
             event.register(ForgeRegistries.Keys.MENU_TYPES, id("browse_auction_menu"), () -> BROWSE_AUCTION_MENU);
             event.register(ForgeRegistries.Keys.MENU_TYPES, id("create_auction_menu"), () -> CREATE_AUCTION_MENU);
         } else if (event.getRegistryKey().equals(ForgeRegistries.Keys.BLOCKS)) {
-            event.register(ForgeRegistries.Keys.BLOCKS, id("auction_house"), () -> new AuctionBlock(BlockBehaviour.Properties.of()));
+            AUCTION_HOUSE = new AuctionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).strength(2.5F).sound(SoundType.WOOD).ignitedByLava());
+            event.register(ForgeRegistries.Keys.BLOCKS, id("auction_house"), () -> AUCTION_HOUSE);
+        } else if (event.getRegistryKey().equals(ForgeRegistries.Keys.ITEMS)) {
+            event.register(ForgeRegistries.Keys.ITEMS, id("auction_house"), () -> new ItemNameBlockItem(AUCTION_HOUSE, new Item.Properties()));
         }
     }
 

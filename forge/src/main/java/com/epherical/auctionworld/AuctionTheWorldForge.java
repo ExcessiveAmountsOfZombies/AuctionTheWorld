@@ -58,6 +58,22 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     public static List<Runnable> auctionListeners = new ArrayList<>();
 
+    // next
+    // todo; update menu immediately when a user bids (maybe some animation effect?
+    // todo; when the user clicks a listing, have the tooltip appear over the scissor effect so it's not cut off
+    // todo; when a user purchases an item, update the menu for all viewers
+
+    // later
+    // todo; implement pagination to claimed items
+    // todo; implement changing of currencies
+    // todo; implement EEP support
+    // todo; implement filters that will interact with the server
+    // todo; implement translation keys for all the text
+    // todo; implement a config
+
+    // stretch
+    // todo; implement messages in the UI so they're easier to see
+
     public AuctionTheWorldForge() {
         super(new ForgeNetworking(MOD_CHANNEL, "1", s -> true, s -> true));
         mod = this;

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "A"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:lectern"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "auction_the_world:auction_house",
+    "count": 1
+  }
+}

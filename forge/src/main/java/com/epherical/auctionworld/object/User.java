@@ -37,23 +37,6 @@ public class User implements DelegatedContainer {
     @Nullable
     private transient ServerPlayer player;
 
-
-    // todos before release:
-    // todo; fix pagination buttons giving errors on the server
-    // todo; fix AuctionManager causing NPE on shutdown
-
-    // probably done
-    // todo; implement count of items in a listing
-    // todo; implement messages so users know what is happening
-
-    // todo; implement pagination to claimed items
-    // todo; implement changing of currencies
-    // todo; implement EEP support
-    // todo; implement filters that will interact with the server
-    // todo; implement translation keys for all the text
-    // todo; implement a config
-    // todo; implement messages in the UI so they're easier to see
-
     private NonNullList<ClaimedItem> claimedItems;
 
     // We can take this last known currency item, and if the item changes in the config
