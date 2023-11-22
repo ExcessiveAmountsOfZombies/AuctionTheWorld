@@ -60,7 +60,6 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
 
     // next
     // todo; update menu immediately when a user bids (maybe some animation effect?
-    // todo; when the user clicks a listing, have the tooltip appear over the scissor effect so it's not cut off
     // todo; when a user purchases an item, update the menu for all viewers
 
     // later

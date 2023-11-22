@@ -19,6 +19,7 @@ import com.epherical.epherolib.client.widgets.DiscordButton;
 import com.epherical.epherolib.client.widgets.PatreonButton;
 import com.epherical.epherolib.networking.AbstractNetworking;
 import net.minecraft.Util;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlainTextButton;
@@ -30,6 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 
 public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMenu> {
     private static final ResourceLocation AUCTION_LOCATION = RegisterListener.id("textures/gui/container/auction.png");
@@ -47,6 +49,8 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
     private AuctionListWidget list;
 
+    private ScreenRender tooltipEntry;
+
 
     public BrowseAuctionScreen(BrowseAuctionMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -57,7 +61,7 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         imageWidth = 512;
         imageHeight = 480;
         super.init();
-        list = new AuctionListWidget(minecraft, this.width + 121, this.height, topPos + 45, topPos + 245, 25);
+        list = new AuctionListWidget(minecraft, this.width + 121, this.height, topPos + 45, topPos + 245, 25, this);
         list.setRenderBackground(false);
         list.setRenderTopAndBottom(false);
         //list.setLeftPos(leftPos);
@@ -192,6 +196,9 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
             super.render(graphics, x, y, delta);
             list.render(graphics, x, y, delta);
             this.renderTooltip(graphics, x, y + 1);
+            if (tooltipEntry != null) {
+                getTooltipEntry().render(font, graphics, x, y, delta);
+            }
         } else {
             this.renderBackground(graphics);
             graphics.drawString(font, "Decrease your GUI scale to see the entire menu!",  50, 60, 0xFFFFFF);
@@ -203,6 +210,14 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         int left = this.leftPos;
         int center = (this.height - this.imageHeight) / 2;
         graphics.blit(AUCTION_LOCATION, left, center, 0, 0, this.imageWidth, this.imageHeight, 512, 512);
+    }
+
+    public void setTooltipEntry(ScreenRender tooltipEntry) {
+        this.tooltipEntry = tooltipEntry;
+    }
+
+    public ScreenRender getTooltipEntry() {
+        return tooltipEntry;
     }
 
     @Override
@@ -217,5 +232,9 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
         //graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
         //graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
 
+    }
+
+    public interface ScreenRender {
+        void render(Font font, GuiGraphics graphics, int mouseX, int mouseY, float delta);
     }
 }

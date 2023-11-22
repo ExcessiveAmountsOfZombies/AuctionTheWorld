@@ -1,6 +1,7 @@
 package com.epherical.auctionworld.client;
 
 import com.epherical.auctionworld.AuctionTheWorldForge;
+import com.epherical.auctionworld.client.screen.BrowseAuctionScreen;
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.networking.UserSubmitBid;
 import com.epherical.auctionworld.networking.UserSubmitBuyout;
@@ -31,8 +32,11 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
     private boolean tooltipActive = false;
 
 
-    public AuctionListWidget(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
+    private final BrowseAuctionScreen screen;
+
+    public AuctionListWidget(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight, BrowseAuctionScreen screen) {
         super(minecraft, width, height, y0, y1, itemHeight);
+        this.screen = screen;
         this.bidAmt = new EditBox(minecraft.font, -100, -100, 70, 20, Component.translatable("Bid Amount"));
         this.bidButton = Button.builder(Component.translatable("Bid"), pButton -> {
             Entry selected = getSelected();
@@ -180,24 +184,29 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             }
 
             if (this.equals(getSelected())) {
-                graphics.pose().pushPose();
-                graphics.pose().translate(0, 0, 532f);
 
-                bidButton.setX((int) (clickedX + 84));
-                bidButton.setY((int) (clickedY + 40));
-                bidButton.render(graphics, x, y, delta);
+                screen.setTooltipEntry((font1, graphics1, mouseX, mouseY, delta1) -> {
+                    graphics1.pose().pushPose();
+                    graphics1.pose().translate(0, 0, 1f);
+                    graphics1.pose().pushPose();
+                    graphics1.pose().translate(0, 0, 532f);
+                    bidButton.setX((int) (clickedX + 84));
+                    bidButton.setY((int) (clickedY + 40));
+                    bidButton.render(graphics1, mouseX, mouseY, delta1);
 
-                buyoutButton.setX((int) (clickedX + 12));
-                buyoutButton.setY((int) (clickedY + 70));
-                buyoutButton.render(graphics, x, y, delta);
+                    buyoutButton.setX((int) (clickedX + 12));
+                    buyoutButton.setY((int) (clickedY + 70));
+                    buyoutButton.render(graphics1, mouseX, mouseY, delta1);
 
-                bidAmt.setX((int) (clickedX + 12));
-                bidAmt.setY((int) (clickedY + 40));
-                bidAmt.render(graphics, x, y, delta);
-
-                graphics.pose().translate(0, 0, -532f);
-                graphics.pose().popPose();
-                graphics.renderTooltip(font, COMPONENTS, Optional.of((item)), (int) clickedX, (int) clickedY);
+                    bidAmt.setX((int) (clickedX + 12));
+                    bidAmt.setY((int) (clickedY + 40));
+                    bidAmt.render(graphics1, mouseX, mouseY, delta1);
+                    graphics1.pose().translate(0, 0, -532f);
+                    graphics1.pose().popPose();
+                    graphics1.renderTooltip(font1, COMPONENTS, Optional.of((item)), (int) clickedX, (int) clickedY);
+                    graphics1.pose().translate(0, 0, -1f);
+                    graphics1.pose().popPose();
+                });
                 tooltipActive = true;
             } else if (!tooltipActive) {
                 bidButton.setX(-100);
@@ -238,6 +247,7 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             if (this.equals(getSelected())) {
                 setSelected(null);
                 tooltipActive = false;
+                screen.setTooltipEntry(null);
             } else {
                 setSelected(this);
                 clickedX = pMouseX;
