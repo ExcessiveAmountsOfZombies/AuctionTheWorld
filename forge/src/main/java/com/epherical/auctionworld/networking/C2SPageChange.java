@@ -20,11 +20,14 @@ public record C2SPageChange(int newPage) {
             }
             AuctionManager aucManager = mod.getAuctionManager();
             user.setCurrentPage(new Page(page, 10));
-            mod.getNetworking().sendToClient(
-                    new S2CSendAuctionListings(
-                            aucManager.getAuctionItemsByPage(user.getCurrentPage()),
-                            aucManager.getMaxPages(user.getCurrentPage())
-                    ), player);
+            if (!AuctionTheWorldForge.client) {
+                mod.getNetworking().sendToClient(
+                        new S2CSendAuctionListings(
+                                aucManager.getAuctionItemsByPage(user.getCurrentPage()),
+                                aucManager.getMaxPages(user.getCurrentPage())
+                        ), player);
+            }
+
         });
     }
 

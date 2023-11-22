@@ -99,8 +99,7 @@ public class AuctionBlock extends Block {
             AuctionTheWorldForge instance = AuctionTheWorldForge.getInstance();
             AuctionManager manager = instance.getAuctionManager();
             User user = instance.getUserManager().getUserByID(player.getUUID());
-            if (user.getLastReceivedAuctions() == null || user.getLastReceivedAuctions().isBefore(manager.getLastUpdated())) {
-                // todo; this will cause problems in singleplayer
+            if (user.getLastReceivedAuctions() == null || user.getLastReceivedAuctions().isBefore(manager.getLastUpdated()) && !AuctionTheWorldForge.client) {
                 instance.getNetworking().sendToClient(new S2CSendAuctionListings(manager.getAuctionItemsByPage(user.getCurrentPage()), manager.getMaxPages(user.getCurrentPage())), (ServerPlayer) player);
                 user.setLastReceivedAuctions(Instant.now());
             }

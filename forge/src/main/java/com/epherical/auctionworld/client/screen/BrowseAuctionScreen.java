@@ -55,116 +55,118 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     @Override
     protected void init() {
         imageWidth = 512;
-        imageHeight = 512;
+        imageHeight = 480;
         super.init();
-        list = new AuctionListWidget(minecraft, this.width + 121, this.height, topPos + 45, 253, 25);
+        list = new AuctionListWidget(minecraft, this.width + 121, this.height, topPos + 45, topPos + 245, 25);
         list.setRenderBackground(false);
         list.setRenderTopAndBottom(false);
         //list.setLeftPos(leftPos);
         addWidget(list);
 
-        auctionScreenButton = this.addRenderableWidget(new PlainTextButton(leftPos + 81, 256, 80, 20, Component.translatable("Create Auction"), press -> {
-            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
-        }, font));
+        if (leftPos >= 0 && topPos >= 0) {
+            auctionScreenButton = this.addRenderableWidget(new PlainTextButton(leftPos + 81, topPos + 248, 80, 20, Component.translatable("Create Auction"), press -> {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new OpenCreateAuction());
+            }, font));
 
-        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert Stack"), var1 -> {
-            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_SLOT));
-        }).pos(leftPos + 351, topPos + 252).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert a stack."))).build());
-        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert as much as possible"), var1 -> {
-            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_ALL));
-        }).pos(leftPos + 351, topPos + 262).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert all available items"))).build());
+            this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert Stack"), var1 -> {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_SLOT));
+            }).pos(leftPos + 351, topPos + 252).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert a stack."))).build());
+            this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Insert as much as possible"), var1 -> {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.INSERT_ALL));
+            }).pos(leftPos + 351, topPos + 262).setIcon(Icon.INCREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Insert all available items"))).build());
 
-        // Right orange, remove items
-        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove Stack"), var1 -> {
-            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_STACK));
-        }).pos(leftPos + 380, topPos + 252).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove a stack."))).build());
-        this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove as much as possible"), var1 -> {
-            AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_ALL));
-        }).pos(leftPos + 380, topPos + 262).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove all available items"))).build());
+            // Right orange, remove items
+            this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove Stack"), var1 -> {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_STACK));
+            }).pos(leftPos + 380, topPos + 252).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove a stack."))).build());
+            this.addRenderableWidget(SmallIconButton.buttonBuilder(Component.nullToEmpty("Remove as much as possible"), var1 -> {
+                AuctionTheWorldForge.getInstance().getNetworking().sendToServer(new SlotManipulation(User.CURRENCY_SLOT, Action.REMOVE_ALL));
+            }).pos(leftPos + 380, topPos + 262).setIcon(Icon.DECREMENT).tooltip(Tooltip.create(Component.nullToEmpty("Remove all available items"))).build());
 
 
-        this.addRenderableWidget(new DiscordButton(leftPos + 515, topPos + 5, press -> {
-            this.minecraft.setScreen(new ConfirmLinkScreen(b -> {
-                if (b) {
-                    Util.getPlatform().openUri("https://discord.gg/a3cX6ttPJK");
+            this.addRenderableWidget(new DiscordButton(leftPos + 515, topPos + 5, press -> {
+                this.minecraft.setScreen(new ConfirmLinkScreen(b -> {
+                    if (b) {
+                        Util.getPlatform().openUri("https://discord.gg/a3cX6ttPJK");
+                    }
+
+                    this.minecraft.setScreen(this);
+                }, "https://discord.gg/a3cX6ttPJK", true));
+            }));
+            this.addRenderableWidget(new PatreonButton(leftPos + 515, topPos + 25, press -> {
+                this.minecraft.setScreen(new ConfirmLinkScreen(b -> {
+                    if (b) {
+                        Util.getPlatform().openUri("https://www.patreon.com/thethonk");
+                    }
+
+                    this.minecraft.setScreen(this);
+                }, "https://www.patreon.com/thethonk", true));
+            }));
+
+            // 83, 247
+
+            time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
+                    button -> {
+                        //button.setMessage(time.sortDirection("Time"));
+                        time.setActivated(true);
+                        item.setActivated(false);
+                        seller.setActivated(false);
+                        bid.setActivated(false);
+                    }).pos(leftPos + 242, topPos + 26).width(100).build()));
+            item = new SortableButton<>(false, Comparator.comparing(auctionItem -> auctionItem.getAuctionItems().get(0).getHoverName().getString()),
+                    this.addRenderableWidget(Button.builder(Component.literal("Item -"),
+                                    button -> {
+                                        //button.setMessage(item.sortDirection("Item"));
+                                        time.setActivated(false);
+                                        item.setActivated(true);
+                                        seller.setActivated(false);
+                                        bid.setActivated(false);
+                                    })
+                            .pos(leftPos + 125, topPos + 26).width(117)
+                            .build()));
+            seller = new SortableButton<>(false, Comparator.comparing(AuctionItem::getSeller), this.addRenderableWidget(Button.builder(Component.literal("Seller -"),
+                            button -> {
+                                //button.setMessage(seller.sortDirection("Seller"));
+                                seller.setActivated(true);
+                                time.setActivated(false);
+                                item.setActivated(false);
+                                bid.setActivated(false);
+
+                            })
+                    .pos(leftPos + 342, topPos + 26).width(100)
+                    .build()));
+            bid = new SortableButton<>(false, Comparator.comparing(AuctionItem::getBuyoutPrice), this.addRenderableWidget(Button.builder(Component.literal("Price -"),
+                            button -> {
+                                //button.setMessage(bid.sortDirection("Buyout"));
+                                bid.setActivated(true);
+                                time.setActivated(false);
+                                item.setActivated(false);
+                                seller.setActivated(false);
+                            })
+                    .pos(leftPos + 442, topPos + 26).width(67)
+                    .build()));
+            this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
+
+
+            AbstractNetworking<?, ?> networking = AuctionTheWorldForge.getInstance().getNetworking();
+            // todo; position buttons for making pages
+            this.addRenderableWidget(Button.builder(Component.literal(">>"), p_93751_ -> {
+                int newPage = page.getPage() + 1;
+                if (newPage > AModClient.maxPages) {
+                    newPage = AModClient.maxPages;
                 }
-
-                this.minecraft.setScreen(this);
-            }, "https://discord.gg/a3cX6ttPJK", true));
-        }));
-        this.addRenderableWidget(new PatreonButton(leftPos + 515, topPos + 25, press -> {
-            this.minecraft.setScreen(new ConfirmLinkScreen(b -> {
-                if (b) {
-                    Util.getPlatform().openUri("https://www.patreon.com/thethonk");
+                page = new Page(newPage, 10);
+                networking.sendToServer(new C2SPageChange(page.getPage()));
+            }).pos(leftPos + 395 + 50, topPos + 250).width(50).build());
+            this.addRenderableWidget(Button.builder(Component.literal("<<"), p_93751_ -> {
+                int newPage = page.getPage() - 1;
+                if (newPage <= 0 || newPage > AModClient.maxPages) {
+                    newPage = Math.min(AModClient.maxPages, 1);
                 }
-
-                this.minecraft.setScreen(this);
-            }, "https://www.patreon.com/thethonk", true));
-        }));
-
-        // 83, 247
-
-        time = new SortableButton<>(false, Comparator.comparing(AuctionItem::getTimeLeft), this.addRenderableWidget(Button.builder(Component.literal("Time -"),
-                button -> {
-                    //button.setMessage(time.sortDirection("Time"));
-                    time.setActivated(true);
-                    item.setActivated(false);
-                    seller.setActivated(false);
-                    bid.setActivated(false);
-                }).pos(leftPos + 242, topPos + 26).width(100).build()));
-        item = new SortableButton<>(false, Comparator.comparing(auctionItem -> auctionItem.getAuctionItems().get(0).getHoverName().getString()),
-                this.addRenderableWidget(Button.builder(Component.literal("Item -"),
-                                button -> {
-                                    //button.setMessage(item.sortDirection("Item"));
-                                    time.setActivated(false);
-                                    item.setActivated(true);
-                                    seller.setActivated(false);
-                                    bid.setActivated(false);
-                                })
-                        .pos(leftPos + 125, topPos + 26).width(117)
-                        .build()));
-        seller = new SortableButton<>(false, Comparator.comparing(AuctionItem::getSeller), this.addRenderableWidget(Button.builder(Component.literal("Seller -"),
-                        button -> {
-                            //button.setMessage(seller.sortDirection("Seller"));
-                            seller.setActivated(true);
-                            time.setActivated(false);
-                            item.setActivated(false);
-                            bid.setActivated(false);
-
-                        })
-                .pos(leftPos + 342, topPos + 26).width(100)
-                .build()));
-        bid = new SortableButton<>(false, Comparator.comparing(AuctionItem::getBuyoutPrice), this.addRenderableWidget(Button.builder(Component.literal("Price -"),
-                        button -> {
-                            //button.setMessage(bid.sortDirection("Buyout"));
-                            bid.setActivated(true);
-                            time.setActivated(false);
-                            item.setActivated(false);
-                            seller.setActivated(false);
-                        })
-                .pos(leftPos + 442, topPos + 26).width(67)
-                .build()));
-        this.list.addEntries(AuctionTheWorldForge.getInstance().getAuctionManager().getAuctions());
-
-
-        AbstractNetworking<?, ?> networking = AuctionTheWorldForge.getInstance().getNetworking();
-        // todo; position buttons for making pages
-        this.addRenderableWidget(Button.builder(Component.literal("next page: "), p_93751_ -> {
-            int newPage = page.getPage() + 1;
-            if (newPage > AModClient.maxPages) {
-                newPage = AModClient.maxPages;
-            }
-            page = new Page(newPage, 10);
-            networking.sendToServer(new C2SPageChange(page.getPage()));
-        }).pos(0, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("prev page: "), p_93751_ -> {
-            int newPage = page.getPage() - 1;
-            if (newPage <= 0 || newPage > AModClient.maxPages) {
-                newPage = Math.min(AModClient.maxPages, 1);
-            }
-            page = new Page(newPage, 10);
-            networking.sendToServer(new C2SPageChange(page.getPage()));
-        }).pos(0,40).build());
+                page = new Page(newPage, 10);
+                networking.sendToServer(new C2SPageChange(page.getPage()));
+            }).pos(leftPos + 395, topPos + 250).width(50).build());
+        }
 
 
 
@@ -185,10 +187,15 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float delta) {
-        this.renderBackground(graphics);
-        super.render(graphics, x, y, delta);
-        list.render(graphics, x, y, delta);
-        this.renderTooltip(graphics, x, y + 1);
+        if (leftPos >= 0 && topPos >= 0) {
+            this.renderBackground(graphics);
+            super.render(graphics, x, y, delta);
+            list.render(graphics, x, y, delta);
+            this.renderTooltip(graphics, x, y + 1);
+        } else {
+            this.renderBackground(graphics);
+            graphics.drawString(font, "Decrease your GUI scale to see the entire menu!",  50, 60, 0xFFFFFF);
+        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -145,8 +146,11 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     public void serverStoppingEvent(ServerStoppingEvent event) {
         auctionManager.saveAuctionItems();
         auctionManager.stop();
-        if (client) {
+    }
 
+    @SubscribeEvent
+    public void serverStoppedEvent(ServerStoppedEvent event) {
+        if (client) {
             auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
         }
     }
