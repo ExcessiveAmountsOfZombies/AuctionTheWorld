@@ -221,7 +221,7 @@ public class AuctionManager {
         if (currentPage.getPageOffset() > auctionList.size()) {
             return List.of();
         }
-        return auctionList.subList(currentPage.getPageOffset(), Math.min(currentPage.getPagedItems(), auctions.size()));
+        return auctionList.subList(currentPage.getPageOffset(), Math.min(currentPage.getPagedItems(), auctionList.size()));
     }
 
     public int getMaxPages(Page page) {

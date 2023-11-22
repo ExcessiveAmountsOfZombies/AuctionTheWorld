@@ -146,7 +146,7 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
         auctionManager.saveAuctionItems();
         auctionManager.stop();
         if (client) {
-            // todo; causes NPE when the server is shutting down.
+
             auctionManager = new AuctionManager(null, true, null); // just in case for client players playing in SP then joining MP later?
         }
     }
