@@ -180,7 +180,9 @@ public class BrowseAuctionScreen extends AbstractContainerScreen<BrowseAuctionMe
     }
 
     public void reset() {
+        tooltipEntry = null;
         minecraft.setScreen(this);
+        list.reset();
     }
 
     @Override

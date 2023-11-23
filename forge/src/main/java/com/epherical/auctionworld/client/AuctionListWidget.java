@@ -63,6 +63,10 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
         }).width(120).build();
     }
 
+    public void reset() {
+        tooltipActive = false;
+        setSelected(null);
+    }
 
     public void tick() {
         bidAmt.tick();
@@ -159,7 +163,7 @@ public class AuctionListWidget extends ContainerObjectSelectionList<AuctionListW
             }
 
             graphics.drawString(font, item.getSeller(), left + 220, top + 8, 0xFFFFFF, false);
-            graphics.drawString(font, String.valueOf(item.getCurrentPrice()), left + 328, top + 2, 0xFFFFFF, false);
+            graphics.drawString(font, String.valueOf(item.getCurrentBidPrice()), left + 328, top + 2, 0xFFFFFF, false);
             graphics.drawString(font, String.valueOf(item.getBuyoutPrice()), left + 328, top + 15, 0xFFFFFF, false);
 
 

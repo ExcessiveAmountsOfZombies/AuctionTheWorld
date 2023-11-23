@@ -2,6 +2,7 @@ package com.epherical.auctionworld;
 
 import com.epherical.auctionworld.config.ConfigBasics;
 import com.epherical.auctionworld.data.AuctionStorage;
+import com.epherical.auctionworld.networking.S2CAuctionUpdate;
 import com.epherical.auctionworld.networking.S2CSendAuctionListings;
 import com.epherical.auctionworld.object.AuctionItem;
 import com.epherical.auctionworld.object.Bid;
@@ -90,6 +91,11 @@ public class AuctionManager {
                     for (UUID expiredAuction : expiredAuctions) {
                         auctions.remove(expiredAuction);
                     }
+                    if (!expiredAuctions.isEmpty()) {
+                        for (Runnable auctionListener : AuctionTheWorldForge.auctionListeners) {
+                            auctionListener.run();
+                        }
+                    }
 
                 }
             }, 1L, 1L, TimeUnit.SECONDS);
@@ -105,6 +111,14 @@ public class AuctionManager {
     public void networkSerializeAuctions(FriendlyByteBuf byteBuf, S2CSendAuctionListings listings) {
         byteBuf.writeInt(listings.items().size());
         listings.items().forEach(item -> item.networkSerialize(byteBuf));
+    }
+
+    public void updateAuctionItem(AuctionItem item) {
+        if (auctions.containsKey(item.getAuctionID())) {
+            auctions.put(item.getAuctionID(), item);
+            auctionList.remove(item);
+            auctionList.add(item);
+        }
     }
 
     // This method is called on the client.
@@ -136,6 +150,9 @@ public class AuctionManager {
                 lastUpdated = Instant.now();
             } else {
                 user.sendPlayerMessageIfOnline(Component.translatable("You do not have enough currency for this bid"));;
+            }
+            for (Runnable auctionListener : AuctionTheWorldForge.auctionListeners) {
+                auctionListener.run();
             }
         }
     }
@@ -174,6 +191,14 @@ public class AuctionManager {
             auctionItem.addBid(bid);
             auctionItem.addTime(ConfigBasics.addTimeAfterBid > -1 ? ConfigBasics.addTimeAfterBid : 0);
             lastUpdated = Instant.now();
+            if (!AuctionTheWorldForge.client && user.getPlayer() != null) {
+                // todo; update all players in the menu later
+                AuctionTheWorldForge.getInstance().getNetworking().sendToClient(new S2CAuctionUpdate(auctionItem), user.getPlayer());
+            } else {
+                for (Runnable auctionListener : AuctionTheWorldForge.auctionListeners) {
+                    auctionListener.run();
+                }
+            }
         }
     }
 

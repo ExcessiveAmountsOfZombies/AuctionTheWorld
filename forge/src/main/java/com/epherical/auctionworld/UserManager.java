@@ -34,8 +34,11 @@ public class UserManager {
     public void playerJoined(ServerPlayer player) {
         if (!players.containsKey(player.getUUID())) {
             User user = playerStorage.loadUser(player);
+            user.setPlayer(player);
             players.put(player.getUUID(), user);
             playerStorage.savePlayer(user);
+        } else {
+            getUserByID(player.getUUID()).setPlayer(player);
         }
     }
 
@@ -51,7 +54,9 @@ public class UserManager {
     }
 
     public void playerLeft(ServerPlayer player) {
-        playerStorage.savePlayer(getUserByID(player.getUUID()));
+        User userByID = getUserByID(player.getUUID());
+        playerStorage.savePlayer(userByID);
+        userByID.setPlayer(null);
     }
 
     public PlayerStorage getPlayerStorage() {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -271,5 +272,21 @@ public class AuctionItem implements TooltipComponent {
         auctionItem.setCountOfItems(buf.readInt());
         auctionItem.auctionItems.get(0).setCount(auctionItem.getCountOfItems());
         return auctionItem;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AuctionItem that = (AuctionItem) o;
+
+        return Objects.equals(auctionID, that.auctionID);
+    }
+
+    @Override
+    public int hashCode() {
+        return auctionID != null ? auctionID.hashCode() : 0;
     }
 }

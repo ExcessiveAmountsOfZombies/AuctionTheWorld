@@ -57,6 +57,9 @@ public class User implements DelegatedContainer {
     }
 
 
+    public ServerPlayer getPlayer() {
+        return player;
+    }
 
     public void sendPlayerMessageIfOnline(Component component) {
         if (player != null) {

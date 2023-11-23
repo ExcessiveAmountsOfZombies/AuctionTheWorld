@@ -28,7 +28,7 @@ public class AModClient {
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.execute(() -> {
                 if (minecraft.screen instanceof BrowseAuctionScreen screen) {
-                    minecraft.setScreen(screen);
+                    screen.reset();
                 }
             });
         });

@@ -10,6 +10,7 @@ import com.epherical.auctionworld.data.PlayerStorage;
 import com.epherical.auctionworld.networking.C2SPageChange;
 import com.epherical.auctionworld.networking.CreateAuctionListing;
 import com.epherical.auctionworld.networking.OpenCreateAuction;
+import com.epherical.auctionworld.networking.S2CAuctionUpdate;
 import com.epherical.auctionworld.networking.S2CSendAuctionListings;
 import com.epherical.auctionworld.networking.SlotManipulation;
 import com.epherical.auctionworld.networking.UserSubmitBid;
@@ -59,13 +60,14 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
     public static List<Runnable> auctionListeners = new ArrayList<>();
 
     // next
-    // todo; update menu immediately when a user bids (maybe some animation effect?
     // todo; when a user purchases an item, update the menu for all viewers
+    // todo; fix bid on item being shoved to the back of the list for the client. (easy)
 
     // later
     // todo; implement pagination to claimed items
     // todo; implement changing of currencies
     // todo; implement EEP support
+    // todo; when a user bids update all viewers (maybe some animation effect)?
     // todo; implement filters that will interact with the server
     // todo; implement translation keys for all the text
     // todo; implement a config
@@ -117,6 +119,10 @@ public class AuctionTheWorldForge extends AuctionTheWorld {
                 (c2SPageChange, buf) -> buf.writeInt(c2SPageChange.newPage()),
                 buf -> new C2SPageChange(buf.readInt()),
                 C2SPageChange::handle);
+        networking.registerServerToClient(id++, S2CAuctionUpdate.class,
+                (s2CBidUpdate, buf) -> s2CBidUpdate.auctionItem().networkSerialize(buf),
+                buf -> new S2CAuctionUpdate(AuctionItem.networkDeserialize(buf)),
+                S2CAuctionUpdate::handle);
 
 
         MinecraftForge.EVENT_BUS.register(this);
